@@ -1,0 +1,102 @@
+{% trans_default_domain('service.admin') %}
+
+{% macro make_reserve(item, date, price) %}
+{#    <a#}
+{#        href="{{ path('services:admin.basket', {#}
+{#            service: item.serviceId,#}
+{#            period: item.periodId,#}
+{#            date: date| date("Y-m-d"),#}
+{#            event: item.serviceEvent#}
+{#        }) }}"#}
+{#        class="btn-link text-decoration-none w-100 modal-link disabled"#}
+{#        data-bs-toggle=modal#}
+{#        data-bs-target="#modal"#}
+{#    >#}
+{#        {{ money(price, item.serviceCurrency) }}#}
+{#    </a>#}
+
+    <span>{{ money(price, item.serviceCurrency) }}</span>
+{% endmacro %}
+
+<main class="main d-print-none ">
+
+    <section class="container px-4 mb-5">
+
+        {# breadcrumb #}
+        <div class="mt-3 d-flex justify-content-between">
+            {{ include(_self|replace({ "content.html.twig": "_breadcrumb.html.twig" })) }}
+        </div>
+
+        <h2>Запись на {{ name|lower }}</h2>
+
+        {# Слоты #}
+        {% for p, item in periods %}
+
+            <div style="display: flex; flex-direction: row">
+                <div class="{{ item ? "p-2" : "p-4" }}"
+                     style="  {{ item ? "border:1px solid #000088;" : "" }} height: 50px; width: 100px; display: flex;align-items: center; box-shadow: 1px 1px 3px 1px #c0ced4;">
+                    {% if item %}
+                        <span>{{ item.timeFrom| date("H:i") }}</span> -
+                        <span>{{ item.timeTo| date("H:i") }}</span>
+                    {% endif %}
+
+                </div>
+
+                {# Даты #}
+                {% for k, date in dates %}
+
+                    {% if p == 0 %}
+                        <div class="ps-2"
+                             style="border: 1px solid #000088; height: 50px; width: 100px; display: flex;align-items: center;">
+                            {{ date| date("m-d, D") }}
+                        </div>
+                    {% else %}
+                        <div class="p-2"
+                             style="border: 1px solid #000088; height: 50px; width: 100px; display: flex;align-items: center; background-color: #c0ced4; box-shadow: 1px 1px 3px 1px #c0ced4;"
+                             title="Заказать '{{ name }}' на {{ date| date("Y:m:d") }} {{ item.timeFrom| date("H:i") }} - {{ item.timeTo| date("H:i") }}"
+                        >
+                            {% if item %}
+
+                                {# TODO Персональная скидка #}
+                                {% set price = user_profile_discount(item.servicePrice) ?: item.servicePrice %}
+
+                                <div class="p-2">
+                                    {% if item.getOrderServices %}
+
+                                        {% set has_service_order = false %}
+                                        {% for order_service in item.getOrderServices %}
+
+                                            {% if order_service and (order_service.order_service_date| date("Y-m-d")) == date| date("Y-m-d") %}
+
+                                                {% set has_service_order = true %}
+                                              <div class="bg-warning">Резерв</div>
+
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {# Слот свободен #}
+                                        {% if has_service_order == false %}
+
+                                          {{ _self.make_reserve(item, date, price) }}
+                                        {% endif %}
+
+                                    {% else %}
+                                        {{ _self.make_reserve(item, date, price) }}
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+</main>
