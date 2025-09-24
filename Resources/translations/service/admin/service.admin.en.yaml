@@ -1,0 +1,35 @@
+page:
+  index: 'Services'
+  new: 'Add service'
+  edit: 'Edit service'
+  delete: 'Delete Services'
+
+breadcrumb:
+  index: 'Services'
+  new: 'Add service'
+  edit: 'Edit service'
+  delete: 'Delete a service'
+
+filter:
+  unchosen_profile: 'Profile not specified'
+
+Services:
+  title:
+    has_Services: 'Services'
+    no_Services: 'There are no service options added for this profile type'
+
+form:
+  label:
+    trans:
+      name: 'service name'
+    url: 'service symbol code'
+success:
+  new: 'Service added successfully'
+  update: 'Service updated successfully'
+  delete: 'Service successfully removed to cart'
+  restore: 'The service was successfully restored'
+danger:
+  new: '%s: Error adding service'
+  update: '%s: Error updating service'
+  delete: '%s: Error deleting service'
+  restore: '%s: Error while restoring service'

@@ -1,0 +1,21 @@
+# Роль
+
+ROLE_SERVICE:
+  name: 'Услуги'
+  desc: 'Услуги'
+
+ROLE_SERVICE_INDEX:
+  name: 'Просмотр'
+  desc: ''
+
+ROLE_SERVICE_NEW:
+  name: 'Добавить'
+  desc: ''
+
+ROLE_SERVICE_EDIT:
+  name: 'Редактировать'
+  desc: ''
+
+ROLE_SERVICE_DELETE:
+  name: 'Удалить'
+  desc: ''
