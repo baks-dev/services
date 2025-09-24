@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,45 +19,26 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Services\UseCase\Admin\New\Info;
+namespace BaksDev\Services\Repository\AllServicesByProfile;
 
-use BaksDev\Services\Entity\Event\Info\ServiceInfoInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use Generator;
 
-/** @see ServiceInfoEvent */
-final class ServiceInfoDTO implements ServiceInfoInterface
+interface AllServicesByProfileInterface
 {
+    /**
+     * Возвращает массив идентификаторов услуг с доп. информацией
+     *
+     * @return Generator{int, ServiceUid}|false
+     */
+    public function findAll(): Generator|false;
 
-
-    #[Assert\NotBlank]
-    private string $name;
-
-    private ?string $preview = null;
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function getPreview(): ?string
-    {
-        return $this->preview;
-    }
-
-    public function setPreview(?string $preview): self
-    {
-        $this->preview = $preview;
-        return $this;
-    }
+    public function onProfile(UserProfileUid $profile): self;
 
 }

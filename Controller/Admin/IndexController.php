@@ -55,7 +55,6 @@ final class IndexController extends AbstractController
         /* Получаем список услуг */
         $query = $allServices
             ->search($search)
-            ->onProfile($this->getCurrentProfileUid())
             ->findPaginator();
 
         return $this->render(

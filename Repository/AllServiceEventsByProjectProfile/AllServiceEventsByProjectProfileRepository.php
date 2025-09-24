@@ -32,7 +32,7 @@ use BaksDev\Services\Entity\Event\Info\ServiceInfo;
 use BaksDev\Services\Entity\Event\Invariable\ServiceInvariable;
 use BaksDev\Services\Entity\Event\ServiceEvent;
 use BaksDev\Services\Entity\Service;
-use BaksDev\Services\Repository\AllServicesByProjectProfile\AllServicesByProjectProfileInterface;
+use BaksDev\Services\Type\Event\ServiceEventUid;
 use Generator;
 use InvalidArgumentException;
 
@@ -60,7 +60,7 @@ final readonly class AllServiceEventsByProjectProfileRepository implements AllSe
         }
 
         $dbal
-            ->addSelect('service.event AS service_event')
+            ->addSelect('service.event AS value')
             ->from(Service::class, 'service');
 
         $dbal
@@ -75,7 +75,7 @@ final readonly class AllServiceEventsByProjectProfileRepository implements AllSe
             );
 
         $dbal
-            ->addSelect('service_info.name')
+            ->addSelect('service_info.name as params')
             ->join(
                 'service_invariable',
                 ServiceInfo::class,
@@ -84,10 +84,9 @@ final readonly class AllServiceEventsByProjectProfileRepository implements AllSe
             );
 
 
-        foreach($dbal->fetchAllAssociative() as $item)
-        {
-            yield new ServiceEvent();
-        }
+        $result = $dbal->fetchAllHydrate(ServiceEventUid::class);
+
+        return ($result->valid() === true) ? $result : false;
 
     }
 }

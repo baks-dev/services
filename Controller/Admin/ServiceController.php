@@ -61,7 +61,7 @@ final class ServiceController extends AbstractController
         $dates = function($date = 'now', $format = 'm-d, D', $days_count = 11) {
 
             $dates = []; /* Инициализация пустого массива для хранения дат */
-            $interval = new DateInterval('P1D'); /* Интервал в 1 день */
+            $interval = DateInterval::createFromDateString('1 day'); /* Интервал в 1 день */
             $period = new DatePeriod(new DateTime($date), $interval, $days_count); /* Период в $days_count дней (включая начальную дату) */
 
             /* Перебор всех дат в периоде, добавление даты в массив */

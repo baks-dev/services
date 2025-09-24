@@ -34,12 +34,26 @@ use BaksDev\Services\Entity\Event\Price\ServicePrice;
 use BaksDev\Services\Entity\Event\ServiceEvent;
 use BaksDev\Services\Entity\Service;
 use BaksDev\Services\Type\Event\ServiceEventUid;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Generator;
-use InvalidArgumentException;
 
 final class ServicePeriodsRepository implements ServicePeriodsInterface
 {
-    public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
+    private UserProfileUid|false $profile = false;
+
+    public function __construct(
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage,
+    ) {}
+
+    /** Фильтр по профилю */
+    public function onProfile(UserProfileUid $profile): self
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
 
     public function findAll(ServiceEventUid $serviceEventUid): false|Generator
     {
@@ -47,18 +61,13 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        if(false === $dbal->isProjectProfile())
-        {
-            throw new InvalidArgumentException('Не установлен PROJECT_PROFILE');
-        }
-
         $dbal->from(ServicePeriod::class, 'period')
             ->addSelect('period.id')
             ->addSelect('period.frm as time_from')
             ->addSelect('period.upto as time_to');
 
         $dbal->where('period.event = :serviceEventUid')
-            ->setParameter('serviceEventUid', $serviceEventUid);
+            ->setParameter('serviceEventUid', $serviceEventUid, ServiceEventUid::TYPE);
 
         $dbal
             ->addSelect('service.id as service_id')
@@ -76,13 +85,17 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
                 '
                         service_invariable.main = service.id
                         AND
-                        service_invariable.profile = :'.$dbal::PROJECT_PROFILE_KEY
-            );
+                        service_invariable.profile = :profile'
+            )
+            ->setParameter(
+                key: 'profile',
+                value: ($this->profile instanceof UserProfileUid) ? $this->profile : $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE,
+            );;
 
 
         $dbal
             ->addSelect('service_event.id as service_event')
-            ->addSelect('service_event.main as service_id')
             ->leftJoin(
                 'period',
                 ServiceEvent::class,
@@ -136,7 +149,6 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
 
 
         $dbal->allGroupByExclude();
-
 
         $dbal->orderBy('period.id', 'ASC');
 

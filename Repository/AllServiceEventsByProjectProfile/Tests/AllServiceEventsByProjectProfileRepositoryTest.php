@@ -48,6 +48,6 @@ class AllServiceEventsByProjectProfileRepositoryTest extends KernelTestCase
             return;
         }
 
-        dd(iterator_to_array($result));
+        //        dd(iterator_to_array($result));
     }
 }

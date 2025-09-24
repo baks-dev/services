@@ -57,7 +57,7 @@ final readonly class AllServicesByProjectProfileRepository implements AllService
         }
 
         $dbal
-            ->addSelect('service.id AS service_id')
+            ->addSelect('service.id AS value')
             ->from(Service::class, 'service');
 
         $dbal
@@ -72,7 +72,7 @@ final readonly class AllServicesByProjectProfileRepository implements AllService
             );
 
         $dbal
-            ->addSelect('service_info.name')
+            ->addSelect('service_info.name AS params')
             ->join(
                 'service_invariable',
                 ServiceInfo::class,
@@ -80,17 +80,11 @@ final readonly class AllServicesByProjectProfileRepository implements AllService
                 'service_info.event = service_invariable.event'
             );
 
-        $result = $dbal->fetchAllAssociative();
 
-        if(true === empty($result))
-        {
-            return false;
-        }
+        $result = $dbal->fetchAllHydrate(ServiceUid::class);
 
-        foreach($result as $item)
-        {
-            yield new ServiceUid($item['service_id'], $item['name']);
-        }
+        return ($result->valid() === true) ? $result : false;
+
     }
 
 }

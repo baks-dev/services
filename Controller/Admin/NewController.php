@@ -55,7 +55,7 @@ final class NewController extends AbstractController
 
         /* Заполнить профиль */
         $ServiceInvariableDTO = new ServiceInvariableDTO();
-        $ServiceInvariableDTO->setProfile($this->getCurrentProfileUid());
+        $ServiceInvariableDTO->setProfile($this->getProfileUid());
 
         $ServiceDTO->setInvariable($ServiceInvariableDTO);
 

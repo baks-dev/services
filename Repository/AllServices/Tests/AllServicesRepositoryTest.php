@@ -25,9 +25,9 @@ namespace BaksDev\Services\Repository\AllServices\Tests;
 
 use BaksDev\Services\Repository\AllServices\AllServicesInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
-use PHPUnit\Framework\Attributes\Group;
 
 #[Group('services')]
 #[When(env: 'test')]
@@ -40,11 +40,12 @@ class AllServicesRepositoryTest extends KernelTestCase
         /** @var AllServicesInterface $AllServicesInterface */
         $AllServicesInterface = self::getContainer()->get(AllServicesInterface::class);
 
+        $profile = $_SERVER['TEST_PROFILE'] ?? UserProfileUid::TEST;
         $result = $AllServicesInterface
-            ->onProfile(new UserProfileUid(UserProfileUid::TEST))
+            ->onProfile(new UserProfileUid($profile))
             ->findPaginator();
 
-        dd($result);
+        //        dd($result);
 
     }
 }

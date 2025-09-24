@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,45 +19,38 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Services\Repository\AllServicesByProjectProfile\Tests;
 
-namespace BaksDev\Services\UseCase\Admin\New\Info;
+use BaksDev\Services\Repository\AllServicesByProfile\AllServicesByProfileInterface;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use PHPUnit\Framework\Attributes\Group;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
-use BaksDev\Services\Entity\Event\Info\ServiceInfoInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-
-/** @see ServiceInfoEvent */
-final class ServiceInfoDTO implements ServiceInfoInterface
+#[Group('services')]
+#[When(env: 'test')]
+class AllServicesByProfileRepositoryTest extends KernelTestCase
 {
-
-
-    #[Assert\NotBlank]
-    private string $name;
-
-    private ?string $preview = null;
-
-    public function getName(): string
+    public function testRepository(): void
     {
-        return $this->name;
-    }
+        self::assertTrue(true);
 
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
+        /** @var AllServicesByProfileInterface $AllServicesByProfileInterface */
+        $AllServicesByProfileInterface = self::getContainer()->get(AllServicesByProfileInterface::class);
 
-    public function getPreview(): ?string
-    {
-        return $this->preview;
-    }
+        $profile = $_SERVER['TEST_PROFILE'] ?? UserProfileUid::TEST;
+        $result = $AllServicesByProfileInterface
+            ->onProfile(new UserProfileUid($profile))
+            ->findAll();
 
-    public function setPreview(?string $preview): self
-    {
-        $this->preview = $preview;
-        return $this;
-    }
+        if(false === $result)
+        {
+            return;
+        }
 
+        //                dd(iterator_to_array($result));
+    }
 }

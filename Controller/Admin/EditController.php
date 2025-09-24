@@ -27,7 +27,6 @@ use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Services\Entity\Event\ServiceEvent;
 use BaksDev\Services\Entity\Service;
-use BaksDev\Services\UseCase\Admin\New\Invariable\ServiceInvariableDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceForm;
 use BaksDev\Services\UseCase\Admin\New\ServiceHandler;
@@ -52,10 +51,6 @@ class EditController extends AbstractController
         $ServiceDTO = new ServiceDTO();
         $serviceEvent->getDto($ServiceDTO);
 
-        /* Заполнить профиль */
-        $ServiceInvariableDTO = new ServiceInvariableDTO();
-        $ServiceInvariableDTO->setProfile($this->getCurrentProfileUid());
-        $ServiceDTO->setInvariable($ServiceInvariableDTO);
 
         /** Форма */
         $form = $this

@@ -23,23 +23,21 @@
 
 namespace BaksDev\Services\UseCase\Admin\New\Tests;
 
+use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
+use BaksDev\Reference\Currency\Type\Currencies\RUR;
+use BaksDev\Services\Entity\Event\ServiceEvent;
+use BaksDev\Services\Entity\Service;
 use BaksDev\Services\UseCase\Admin\New\Info\ServiceInfoDTO;
 use BaksDev\Services\UseCase\Admin\New\Invariable\ServiceInvariableDTO;
+use BaksDev\Services\UseCase\Admin\New\Period\ServicePeriodDTO;
 use BaksDev\Services\UseCase\Admin\New\Price\ServicePriceDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceHandler;
-use BaksDev\Services\Entity\Event\ServiceEvent;
-use BaksDev\Services\Entity\Service;
-use BaksDev\Orders\Order\Type\ServiceUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use Doctrine\DBAL\Types\DateIntervalType;
-use Doctrine\DBAL\Types\TimeType;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
-
-use BaksDev\Reference\Currency\Type\Currencies\RUR;
 
 #[Group('services')]
 #[When(env: 'test')]
@@ -96,14 +94,22 @@ class NewServiceHandlerTest extends KernelTestCase
         $ServiceDTO->setInfo($ServiceInfoDTO);
 
         /**
+         * Period
+         */
+        $ServicePeriodDTO = new ServicePeriodDTO();
+
+        $ServicePeriodDTO->setFrm(new \DateTimeImmutable('now'));
+        $ServicePeriodDTO->setUpto(new \DateTimeImmutable('now'));
+
+        $ServiceDTO->addPeriod($ServicePeriodDTO);
+
+        /**
          * Invariable
          */
         $ServiceInvariableDTO = new ServiceInvariableDTO();
         $ServiceInvariableDTO->setProfile(new UserProfileUid(UserProfileUid::TEST));
 
         $ServiceDTO->setInvariable($ServiceInvariableDTO);
-
-//        dd($ServiceDTO);
 
         self::bootKernel();
 
