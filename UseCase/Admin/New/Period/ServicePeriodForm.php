@@ -37,30 +37,26 @@ final class ServicePeriodForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
         $builder->add(
             'frm',
             TimeType::class,
             [
                 'widget' => 'single_text',
-                'required' => true,
-                'label' => 'Время от',
                 'input' => 'datetime_immutable',
+                'label' => false,
+                'required' => true,
             ]
         );
 
-        $format = "H:i";
-        /** @var ServicePeriodDTO $dto */
         $now = new DateTimeImmutable('now');
 
         $builder->get('frm')->addModelTransformer(
             new CallbackTransformer(
-                function($frm) {
+                function(?DateTimeImmutable $frm) {
                     return $frm;
                 },
-                function($frm) use ($now, $format) {
-                    $getFrm = $frm
-                        ->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
+                function(DateTimeImmutable $frm) use ($now) {
+                    $getFrm = $frm->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
                     return $getFrm;
                 }
             )
@@ -71,20 +67,19 @@ final class ServicePeriodForm extends AbstractType
             TimeType::class,
             [
                 'widget' => 'single_text',
-                'required' => true,
-                'label' => 'Время до',
                 'input' => 'datetime_immutable',
+                'label' => false,
+                'required' => true,
             ]
         );
 
         $builder->get('upto')->addModelTransformer(
             new CallbackTransformer(
-                function($upto) {
+                function(?DateTimeImmutable $upto) {
                     return $upto;
                 },
-                function($upto) use ($now, $format) {
-                    $getUpto = $upto
-                        ->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
+                function(DateTimeImmutable $upto) use ($now) {
+                    $getUpto = $upto->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
                     return $getUpto;
                 }
             )

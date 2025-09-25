@@ -51,11 +51,16 @@ final class IndexController extends AbstractController
         $searchForm = $this->createForm(SearchForm::class, $search);
         $searchForm->handleRequest($request);
 
+        $allServices->search($search);
+
+        /** Если админ - все услуги */
+        if(true === $this->isAdmin())
+        {
+            $allServices->forAdmin();
+        }
 
         /* Получаем список услуг */
-        $query = $allServices
-            ->search($search)
-            ->findPaginator();
+        $query = $allServices->findPaginator();
 
         return $this->render(
             [

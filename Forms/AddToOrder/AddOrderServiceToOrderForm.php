@@ -142,16 +142,15 @@ final class AddOrderServiceToOrderForm extends AbstractType
                         $form->add('period', ChoiceType::class, [
                             'choices' => $periodChoice,
                             'choice_value' => function(?ServicePeriodUid $period) {
-
-                                return $period?->getValue().'_'.$period?->getParams('time');
+                                return $period?->getValue();
                             },
                             'choice_label' => function(ServicePeriodUid $period) {
                                 return $period->getParams('time').($period->getParams('active') === true ? ' - забронировано' : '');
                             },
-                            'choice_attr' => function($choice) {
-                                return ($choice->getParams('active') === true)
+                            'choice_attr' => function(ServicePeriodUid $period) {
+                                return ($period->getParams('active') === true)
                                     ? ['disabled' => 'disabled']
-                                    : [];
+                                    : ['data-time' => $period->getParams('time')];
                             },
                             'placeholder' => 'Выберите период',
                             'label' => 'Период',

@@ -151,14 +151,14 @@ async function changeOrderService(form)
 
                 if(priceFormField && priceFormField.type !== "hidden")
                 {
-                    document.getElementById('field_price').replaceWith(result.getElementById('field_price'))
+                    fieldReplace(document.getElementById('field_price'), result.getElementById('field_price'))
                 }
 
                 let dateFormField = result.getElementById('add_order_service_to_order_form_date')
 
                 if(dateFormField && dateFormField.type !== "hidden")
                 {
-                    document.getElementById('field_date').replaceWith(result.getElementById('field_date'))
+                    fieldReplace(document.getElementById('field_date'), result.getElementById('field_date'))
                     initDatapickerForField(dateFormField)
                 }
 
@@ -167,7 +167,7 @@ async function changeOrderService(form)
                 if(periodFormField && periodFormField.type !== "hidden")
                 {
                     /** Заменяем блок с полем формы */
-                    document.getElementById('field_period').replaceWith(result.getElementById('field_period'))
+                    fieldReplace(document.getElementById('field_period'), result.getElementById('field_period'))
 
                     const period = document.getElementById("add_order_service_to_order_form_period")
 
@@ -343,8 +343,12 @@ async function submitOrderService(form)
                 const formId = formData["add_order_service_to_order_form[serv]"]
                 const formName = formData["add_order_service_to_order_form[name]"]
                 const formDate = formData["add_order_service_to_order_form[date]"]
-                const formPeriod = formData["add_order_service_to_order_form[period]"].split("_")
+                const formPeriodUid = formData["add_order_service_to_order_form[period]"] // uuid
                 const formPrice = formData["add_order_service_to_order_form[price]"]
+
+                const formPeriodEl = form.elements['add_order_service_to_order_form[period]']
+                const selectedPeriod = formPeriodEl.options[formPeriodEl.selectedIndex];
+                const formPeriodTime = selectedPeriod.dataset.time // text
 
                 /**
                  * Price
@@ -361,7 +365,7 @@ async function submitOrderService(form)
                  * Period
                  */
                 let periodPrototypeParentEl = prototypPeriod.closest('td')
-                periodPrototypeParentEl.append(formPeriod[1]);
+                periodPrototypeParentEl.append(formPeriodTime);
 
                 /**
                  * Date
@@ -373,12 +377,12 @@ async function submitOrderService(form)
                 prototypName.value = formName
                 prototypDate.value = formDate
                 prototypPrice.value = formPrice
-                prototypPeriod.value = formPeriod[0] // uuid
-                prototypPeriod.textContent = formPeriod[1] // text
+                prototypPeriod.value = formPeriodUid // uuid
+                prototypPeriod.textContent = formPeriodTime // text
 
                 ///////////////
 
-                if(false === isOrderServiceUnique(formId, formDate, formPeriod[0]))
+                if(false === isOrderServiceUnique(formId, formDate, formPeriodUid))
                 {
                     /** Закрываем модальное окно */
                     let Modal = document.getElementById("modal");
@@ -388,7 +392,7 @@ async function submitOrderService(form)
                     let noticeToast =
                         '{ "type":"danger" , ' +
                         '"header":"Ошибка при добавлении услуги в заказ"  , ' +
-                        `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriod[1] + ` уже добавлена" }`;
+                        `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriodTime + ` уже добавлена" }`;
 
                     createToast(JSON.parse(noticeToast));
                     return;
@@ -835,7 +839,6 @@ async function checkServicePeriod(form, fieldId)
                 return false;
             }
 
-            //return response.json();
             return response.text();
 
         })
@@ -858,39 +861,7 @@ async function checkServicePeriod(form, fieldId)
                 fieldReplace(currentPeriod, resultPeriod)
             }
 
-            //if(document.body.contains(resultPeriod))
-            //{
-            //    //servicePeriod()
-            //}
-
         })
-
-
-    //.then((result) =>
-    //{
-    //    console.log(result.exist)
-    //
-    //    if(result.exist === true)
-    //    {
-    //        let noticeToast =
-    //            '{ "type":"danger" , ' +
-    //            '"header":"Ошибка при добавлении услуги в заказ"  , ' +
-    //            `"message" : "Услуга  ` + result.name + ` на ` + result.date + ` c ` + result.period + ` уже забронированна" }`;
-    //
-    //        createToast(JSON.parse(noticeToast));
-    //    }
-    //
-    //    if(result.exist === false)
-    //    {
-    //        let noticeToast =
-    //            '{ "type":"succes" , ' +
-    //            '"header":"Ошибка при добавлении услуги в заказ"  , ' +
-    //            `"message" : "Услуга  ` + result.name + ` на ` + result.date + ` c ` + result.period + ` уже забронированна" }`;
-    //
-    //        createToast(JSON.parse(noticeToast));
-    //    }
-    //
-    //})
 }
 
 //-------------------------------------

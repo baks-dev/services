@@ -327,10 +327,12 @@ function addOrderService(form)
     const formId = formData["add_order_service_to_order_form[serv]"]
     const formName = formData["add_order_service_to_order_form[name]"]
     const formDate = formData["add_order_service_to_order_form[date]"]
-    const formPeriod = formData["add_order_service_to_order_form[period]"].split("_")
-    const formPeriodUid = formPeriod[0] // uuid
-    const formPeriodText = formPeriod[1] // text
+    const formPeriodUid = formData["add_order_service_to_order_form[period]"] // uuid
     const formPrice = formData["add_order_service_to_order_form[price]"]
+
+    const formPeriodEl = form.elements['add_order_service_to_order_form[period]']
+    const selectedPeriod = formPeriodEl.options[formPeriodEl.selectedIndex];
+    const formPeriodTime = selectedPeriod.dataset.time // text
 
     /**
      * Price
@@ -350,7 +352,7 @@ function addOrderService(form)
      * Period
      */
     let prototypePeriodParentTd = prototypPeriod.closest('td')
-    prototypePeriodParentTd.append(formPeriodText);
+    prototypePeriodParentTd.append(formPeriodTime);
 
     /**
      * Date
@@ -364,7 +366,7 @@ function addOrderService(form)
     prototypDate.value = formDate
     prototypPrice.value = formPrice
     prototypPeriod.value = formPeriodUid
-    prototypPeriod.textContent = formPeriodText
+    prototypPeriod.textContent = formPeriodTime
 
     /** Проверка уникальности услуги в коллекции */
     if(false === isOrderServiceUnique(formId, formDate, formPeriodUid))
@@ -372,7 +374,7 @@ function addOrderService(form)
         let noticeToast =
             '{ "type":"danger" , ' +
             '"header":"Ошибка при добавлении услуги в заказ"  , ' +
-            `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriodText + ` уже добавлена" }`;
+            `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriodTime + ` уже добавлена" }`;
 
         createToast(JSON.parse(noticeToast));
         return;
