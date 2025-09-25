@@ -35,7 +35,6 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 class AllServicesRepository implements AllServicesInterface
 {
-
     private UserProfileUid|false $profile = false;
 
     private SearchDTO|false $search = false;
@@ -53,10 +52,9 @@ class AllServicesRepository implements AllServicesInterface
     }
 
     /** Фильтр по профилю */
-    public function onProfile(UserProfileUid $profile): self
+    public function byProfile(UserProfileUid $profile): self
     {
         $this->profile = $profile;
-
         return $this;
     }
 
@@ -71,13 +69,13 @@ class AllServicesRepository implements AllServicesInterface
             ->from(Service::class, 'service');
 
         $dbal
-            ->leftJoin(
+            ->join(
                 'service',
                 ServiceInvariable::class,
                 'invariable',
-                'invariable.main = service.id
-             AND invariable.profile = :profile
-                        '
+                '
+                    invariable.main = service.id
+                    AND invariable.profile = :profile'
             )
             ->setParameter(
                 key: 'profile',
@@ -88,7 +86,7 @@ class AllServicesRepository implements AllServicesInterface
         $dbal
             ->addSelect('info.name')
             ->addSelect('info.preview')
-            ->leftJoin(
+            ->join(
                 'service',
                 ServiceInfo::class,
                 'info',
@@ -97,7 +95,7 @@ class AllServicesRepository implements AllServicesInterface
 
         $dbal
             ->addSelect('price.price')
-            ->leftJoin(
+            ->join(
                 'service',
                 ServicePrice::class,
                 'price',
@@ -112,10 +110,8 @@ class AllServicesRepository implements AllServicesInterface
                 ->addSearchLike('info.name');
         }
 
-        $dbal
-            ->orderBy('info.name');
+        $dbal->orderBy('info.name');
 
         return $this->paginator->fetchAllHydrate($dbal, AllServicesResult::class);
-
     }
 }

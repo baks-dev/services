@@ -32,13 +32,12 @@ use Generator;
 
 interface AllServicesByProfileInterface
 {
+    public function byProfile(UserProfileUid $profile): self;
+
     /**
      * Возвращает массив идентификаторов услуг с доп. информацией
      *
      * @return Generator{int, ServiceUid}|false
      */
     public function findAll(): Generator|false;
-
-    public function onProfile(UserProfileUid $profile): self;
-
 }

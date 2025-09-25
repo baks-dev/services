@@ -31,8 +31,8 @@ interface AllServicesInterface
 {
     public function search(SearchDTO $search): self;
 
+    public function byProfile(UserProfileUid $profile): self;
+
     /** Метод возвращает пагинатор Services */
     public function findPaginator(): PaginatorInterface;
-
-    public function onProfile(UserProfileUid $profile): self;
 }

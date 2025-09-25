@@ -43,11 +43,9 @@ class AllServiceEventsByProjectProfileRepositoryTest extends KernelTestCase
 
         $result = $AllServiceEventsByProjectProfileInterface->findAll();
 
-        if(false === $result->valid())
+        if(false === $result)
         {
             return;
         }
-
-        //        dd(iterator_to_array($result));
     }
 }

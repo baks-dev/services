@@ -36,7 +36,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_SERVICE', 'ROLE_SERVICE_INDEX')]
+#[RoleSecurity('ROLE_SERVICE_INDEX')]
 final class IndexController extends AbstractController
 {
     #[Route('/admin/services/{page<\d+>}', name: 'admin.index', methods: ['GET', 'POST'])]

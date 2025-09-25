@@ -24,6 +24,7 @@
 namespace BaksDev\Services\Repository\AllServices\Tests;
 
 use BaksDev\Services\Repository\AllServices\AllServicesInterface;
+use BaksDev\Services\Repository\AllServices\AllServicesResult;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -42,10 +43,30 @@ class AllServicesRepositoryTest extends KernelTestCase
 
         $profile = $_SERVER['TEST_PROFILE'] ?? UserProfileUid::TEST;
         $result = $AllServicesInterface
-            ->onProfile(new UserProfileUid($profile))
+            ->byProfile(new UserProfileUid($profile))
             ->findPaginator();
 
-        //        dd($result);
+        $data = $result->getData();
+        if(true === empty($data))
+        {
+            return;
+        }
+
+        $AllServicesResult = current($data);
+
+        // Вызываем все геттеры
+        $reflectionClass = new \ReflectionClass(AllServicesResult::class);
+        $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+
+        foreach($methods as $method)
+        {
+            // Методы без аргументов
+            if($method->getNumberOfParameters() === 0)
+            {
+                // Вызываем метод
+                $data = $method->invoke($AllServicesResult);
+            }
+        }
 
     }
 }

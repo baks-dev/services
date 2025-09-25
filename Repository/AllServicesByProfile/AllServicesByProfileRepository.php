@@ -45,7 +45,7 @@ final class AllServicesByProfileRepository implements AllServicesByProfileInterf
     ) {}
 
     /** Фильтр по профилю */
-    public function onProfile(UserProfileUid $profile): self
+    public function byProfile(UserProfileUid $profile): self
     {
         $this->profile = $profile;
 
@@ -91,7 +91,6 @@ final class AllServicesByProfileRepository implements AllServicesByProfileInterf
                 'service_info',
                 'service_info.event = service_invariable.event'
             );
-
 
         $result = $dbal->fetchAllHydrate(ServiceUid::class);
 
