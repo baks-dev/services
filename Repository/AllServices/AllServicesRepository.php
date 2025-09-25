@@ -35,6 +35,7 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 class AllServicesRepository implements AllServicesInterface
 {
+    private bool $admin = false;
 
     private UserProfileUid|false $profile = false;
 
@@ -52,11 +53,16 @@ class AllServicesRepository implements AllServicesInterface
         return $this;
     }
 
+    public function forAdmin(): self
+    {
+        $this->admin = true;
+        return $this;
+    }
+
     /** Фильтр по профилю */
-    public function onProfile(UserProfileUid $profile): self
+    public function byProfile(UserProfileUid $profile): self
     {
         $this->profile = $profile;
-
         return $this;
     }
 
@@ -70,25 +76,39 @@ class AllServicesRepository implements AllServicesInterface
         $dbal->addSelect('service.event as id')
             ->from(Service::class, 'service');
 
-        $dbal
-            ->leftJoin(
-                'service',
-                ServiceInvariable::class,
-                'invariable',
-                'invariable.main = service.id
-             AND invariable.profile = :profile
-                        '
-            )
-            ->setParameter(
-                key: 'profile',
-                value: ($this->profile instanceof UserProfileUid) ? $this->profile : $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE,
-            );
+        if(true === $this->admin)
+        {
+            $dbal
+                ->join(
+                    'service',
+                    ServiceInvariable::class,
+                    'invariable',
+                    '
+                    invariable.main = service.id'
+                );
+        }
+        else
+        {
+            $dbal
+                ->join(
+                    'service',
+                    ServiceInvariable::class,
+                    'invariable',
+                    '
+                        invariable.main = service.id
+                        AND invariable.profile = :profile'
+                )
+                ->setParameter(
+                    key: 'profile',
+                    value: ($this->profile instanceof UserProfileUid) ? $this->profile : $this->UserProfileTokenStorage->getProfile(),
+                    type: UserProfileUid::TYPE,
+                );
+        }
 
         $dbal
             ->addSelect('info.name')
             ->addSelect('info.preview')
-            ->leftJoin(
+            ->join(
                 'service',
                 ServiceInfo::class,
                 'info',
@@ -97,7 +117,7 @@ class AllServicesRepository implements AllServicesInterface
 
         $dbal
             ->addSelect('price.price')
-            ->leftJoin(
+            ->join(
                 'service',
                 ServicePrice::class,
                 'price',
@@ -112,10 +132,8 @@ class AllServicesRepository implements AllServicesInterface
                 ->addSearchLike('info.name');
         }
 
-        $dbal
-            ->orderBy('info.name');
+        $dbal->orderBy('info.name');
 
         return $this->paginator->fetchAllHydrate($dbal, AllServicesResult::class);
-
     }
 }

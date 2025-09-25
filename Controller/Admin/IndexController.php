@@ -36,7 +36,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_SERVICE', 'ROLE_SERVICE_INDEX')]
+#[RoleSecurity('ROLE_SERVICE_INDEX')]
 final class IndexController extends AbstractController
 {
     #[Route('/admin/services/{page<\d+>}', name: 'admin.index', methods: ['GET', 'POST'])]
@@ -51,11 +51,16 @@ final class IndexController extends AbstractController
         $searchForm = $this->createForm(SearchForm::class, $search);
         $searchForm->handleRequest($request);
 
+        $allServices->search($search);
+
+        /** Если админ - все услуги */
+        if(true === $this->isAdmin())
+        {
+            $allServices->forAdmin();
+        }
 
         /* Получаем список услуг */
-        $query = $allServices
-            ->search($search)
-            ->findPaginator();
+        $query = $allServices->findPaginator();
 
         return $this->render(
             [

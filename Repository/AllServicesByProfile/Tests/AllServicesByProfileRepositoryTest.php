@@ -42,15 +42,9 @@ class AllServicesByProfileRepositoryTest extends KernelTestCase
         $AllServicesByProfileInterface = self::getContainer()->get(AllServicesByProfileInterface::class);
 
         $profile = $_SERVER['TEST_PROFILE'] ?? UserProfileUid::TEST;
+
         $result = $AllServicesByProfileInterface
-            ->onProfile(new UserProfileUid($profile))
+            ->byProfile(new UserProfileUid($profile))
             ->findAll();
-
-        if(false === $result)
-        {
-            return;
-        }
-
-        //                dd(iterator_to_array($result));
     }
 }
