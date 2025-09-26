@@ -13,8 +13,9 @@
 
     <div class="modal-body">
 
-        {{ form_row(form.info) }}
-        {{ form_row(form.price) }}
+        {{ form_row(form.info.name, { label: 'Название' }) }}
+
+        {{ form_row(form.info.preview, { label: 'Опсиание услуги' }) }}
 
         {# Периоды #}
 

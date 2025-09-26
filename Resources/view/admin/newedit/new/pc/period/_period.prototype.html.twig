@@ -1,14 +1,10 @@
-<div class="card w-100 border-light">
-    <div class="card-body text-start pb-0">
+{# Коллекция диапазонов/периодов  #}
 
-        {# Коллекция диапазонов/периодов  #}
+<div class="d-flex justify-content-between gap-3" style="align-items: end;">
 
-        <div class="d-flex justify-content-between gap-3" style="align-items: end;">
-
-            <div class="mb-3">
-                <button type="button"
-                        class="btn-outline-danger del-item-period border-0 btn"
-                        data-delete="item_{{ form.vars.id }}">
+    <button type="button"
+            class="btn-outline-danger del-item-period border-0 btn"
+            data-delete="item_{{ form.vars.id }}">
             <span class="svg-icon svg-icon-2 text-nowrap">
                 <svg
                         xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
@@ -22,14 +18,10 @@
                           transform="rotate(45 8.46447 7.05029)"
                           fill="currentColor"></rect>
                 </svg></span>
-                </button>
-            </div>
+    </button>
 
-            <div class="w-100">{{ form_row(form.period.vars.prototype.frm, { label : 'Время от' }) }}</div>
-            <div class="w-100">{{ form_row(form.period.vars.prototype.upto, { label : 'Время до' }) }}</div>
+    <div class="w-100">{{ form_widget(form.period.vars.prototype.frm, { label : 'Время от' }) }}</div>
+    <div class="w-100">{{ form_widget(form.period.vars.prototype.upto, { label : 'Время до' }) }}</div>
 
-        </div>
-        <div class="time-error invalid-feedback"></div>
-
-    </div>
 </div>
+

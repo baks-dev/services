@@ -16,26 +16,53 @@
         <div class="modal-body">
 
 
-            {{ form_row(form.info) }}
-            {{ form_row(form.price) }}
+            {{ form_row(form.info.name, { label: 'Название' }) }}
+
+            {{ form_row(form.info.preview, { label: 'Опсиание услуги' }) }}
+
+            <div class="d-flex gap-2 justify-content-between align-items-baseline">
+
+                <div class="w-50">
+
+                    {{ form_row(form.price.price, {
+                        label: 'Стоимость услуги',
+                    }) }}
+
+                </div>
+
+                <div class="w-50">
+                    {{ form_row(form.price.currency, {
+                        label: 'Валюта',
+                        attr: { 'data-select' : 'select2', class: 'nice-select mb-0'},
+                    }) }}
+                </div>
+
+            </div>
 
             {# Слоты #}
 
             <div class="card-header border-light bg-body">
                 <div class="card-title">
                     <h4>
-                        {# Слоты #}
-                        Слоты
+                        Периоды
                     </h4>
                 </div>
             </div>
 
-            <div class="card-body pb-0" id="collection-period">
-                {% for period_count, form in form.period %}
-                    <div class='mb-3' id='item_{{ form.vars.id }}'>
-                        {{ include(_self|replace({ "content.html.twig": "/period/_period.html.twig" })) }}
+            <div class="card w-100 border-light">
+                <div class="card-body pb-0" id="collection-period">
+
+                    <div class="d-flex justify-content-between gap-3 mb-3">
+                        <div class="w-25">&nbsp;</div>
+                        <div class="w-100">Время от</div>
+                        <div class="w-100">Время до</div>
                     </div>
-                {% endfor %}
+                    {% for period_count, form in form.period %}
+                        <div class='mb-3 item-service' id='item_{{ form.vars.id }}'>
+                            {{ include(_self|replace({ "content.html.twig": "/period/_period.html.twig" })) }}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
             <div class="card-footer border-light bg-body d-flex justify-content-between align-items-center">

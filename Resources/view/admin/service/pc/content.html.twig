@@ -46,9 +46,9 @@
                 {% for k, date in dates %}
 
                     {% if p == 0 %}
-                        <div class="ps-2"
-                             style="border: 1px solid #000088; height: 50px; width: 100px; display: flex;align-items: center;">
-                            {{ date| date("m-d, D") }}
+                        <div class="ps-2 "
+                             style="border: 1px solid #000088; height: 50px; width: 100px; display: flex; align-items: center;">
+                            {{ date|format_datetime(pattern="EE, d MMM") }}  {# date("m-d, D") #}
                         </div>
                     {% else %}
                         <div class="p-2"

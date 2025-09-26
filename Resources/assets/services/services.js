@@ -32,29 +32,29 @@ var TimeValidator =
         validateTimeRange(fromTime, toTime)
         {
 
-            const [fromH, fromM] = fromTime.split(':').map(Number);
-            const [toH, toM] = toTime.split(':').map(Number);
+            const [fromH, fromM] = fromTime.split(":").map(Number);
+            const [toH, toM] = toTime.split(":").map(Number);
 
             const fromMinutes = fromH * 60 + fromM;
             const toMinutes = toH * 60 + toM;
 
-            const submit_button = document.getElementById('service_form_service');
+            const submit_button = document.getElementById("service_form_service");
             if(fromMinutes >= toMinutes)
             {
-                return {isValid: false, error: 'Значение "Время от" должно быть меньше значения "Время до"'};
+                return {isValid : false, error : "Значение \"Время от\" должно быть меньше значения \"Время до\""};
             }
 
-            return {isValid: true, error: null};
+            return {isValid : true, error : null};
         },
 
         /** Валидация формы */
         setupTimeValidation(formName, timeFrom, timeTo, index)
         {
 
-            const form = document.querySelector('[name="' + formName + '"]');
-            const fromInput = document.querySelector('[name="' + timeFrom + '"]');
-            const toInput = document.querySelector('[name="' + timeTo + '"]');
-            const errorElement = document.querySelector('.time-error' + index);
+            const form = document.querySelector("[name=\"" + formName + "\"]");
+            const fromInput = document.querySelector("[name=\"" + timeFrom + "\"]");
+            const toInput = document.querySelector("[name=\"" + timeTo + "\"]");
+            const errorElement = document.querySelector(".time-error" + index);
 
             const validate = () =>
             {
@@ -63,20 +63,21 @@ var TimeValidator =
 
                 if(errorElement)
                 {
-                    errorElement.textContent = result.isValid ? '' : result.error;
-                    errorElement.style.display = result.isValid ? 'none' : 'block';
+                    errorElement.textContent = result.isValid ? "" : result.error;
+                    errorElement.style.display = result.isValid ? "none" : "block";
 
-                    const submit_button = document.getElementById('service_form_service');
+                    const submit_button = document.getElementById("service_form_service");
 
-                    const time_errors = document.querySelectorAll('.time-error')
+                    const time_errors = document.querySelectorAll(".time-error");
                     for(const time_error of time_errors)
                     {
 
-                        if(time_error.style.display === 'block')
+                        if(time_error.style.display === "block")
                         {
                             submit_button.disabled = true;
                             break;
-                        } else
+                        }
+                        else
                         {
                             submit_button.disabled = false;
                         }
@@ -87,39 +88,38 @@ var TimeValidator =
                 return result.isValid;
             };
 
-            fromInput.addEventListener('change', validate);
-            toInput.addEventListener('change', validate);
+            fromInput.addEventListener("change", validate);
+            toInput.addEventListener("change", validate);
 
             return validate;
-        }
-    }
+        },
+    };
 
 
 /** Валидация уже имеющихся периодов */
-var cards = document.querySelectorAll('.card')
+var cards = document.querySelectorAll(".card");
 
 for(let index = 0; index < cards.length; index++)
 {
     const res = TimeValidator.setupTimeValidation(
-        'service_form',
-        'service_form[period][' + index + '][frm]',
-        'service_form[period][' + index + '][upto]',
-        index
+        "service_form",
+        "service_form[period][" + index + "][frm]",
+        "service_form[period][" + index + "][upto]",
+        index,
     );
 }
 
 /** Добавление еще одного периода */
-$addButtonPeriod = document.getElementById('periodAddCollection');
+$addButtonPeriod = document.getElementById("periodAddCollection");
 
 if($addButtonPeriod)
 {
     /* Блок для новой коллекции */
-    let $blockCollectionCall = document.getElementById('collection-period');
+    let $blockCollectionCall = document.getElementById("collection-period");
 
     if($blockCollectionCall)
     {
-
-        $addButtonPeriod.addEventListener('click', function()
+        $addButtonPeriod.addEventListener("click", function()
         {
 
             let $addButtonPeriod = this;
@@ -132,38 +132,39 @@ if($addButtonPeriod)
             newForm = newForm.replace(/__periods__/g, index);
 
             /* Вставляем новую коллекцию */
-            let div = document.createElement('div');
-            div.id = 'service_form_period_' + index;
-            div.classList.add('mb-3');
-            
+            let div = document.createElement("div");
+            div.id = "item_service_form_period_" + index;
+            div.classList.add("mb-3");
+            div.classList.add("item-service");
+
             div.innerHTML = newForm;
             $blockCollectionCall.append(div);
 
 
             /* Удалить */
-            (div.querySelector('.del-item-period'))?.addEventListener('click', deletePeriod);
+            (div.querySelector(".del-item-period"))?.addEventListener("click", deletePeriod);
 
-            const delButton = div.querySelector('.del-item-period');
-            delButton.dataset.delete = 'service_form_period_' + (index).toString()
+            const delButton = div.querySelector(".del-item-period");
+            delButton.dataset.delete = "item_service_form_period_" + (index).toString();
 
-            const timeErrorDiv = div.querySelector('.time-error')
-            timeErrorDiv.classList.add('time-error' + index);
+            //const timeErrorDiv = div.querySelector(".time-error");
+            //timeErrorDiv.classList.add("time-error" + index);
 
 
             /* Увеличиваем data-index на 1 после вставки новой коллекции */
             $addButtonPeriod.dataset.index = (index + 1).toString();
 
             /* Плавная прокрутка к элементу */
-            div.scrollIntoView({block: "center", inline: "center", behavior: "smooth"});
+            div.scrollIntoView({block : "center", inline : "center", behavior : "smooth"});
 
 
             /** Добавить валидацию периодов для нового периода */
             {
                 TimeValidator.setupTimeValidation(
-                    'service_form',
-                    'service_form[period][' + index + '][frm]',
-                    'service_form[period][' + index + '][upto]',
-                    index
+                    "service_form",
+                    "service_form[period][" + index + "][frm]",
+                    "service_form[period][" + index + "][upto]",
+                    index,
                 );
             }
 
@@ -172,12 +173,17 @@ if($addButtonPeriod)
 }
 
 /** Удаление периода */
-document.querySelectorAll('.del-item-period').forEach(function(item)
+document.querySelectorAll(".del-item-period").forEach(function(item)
 {
-    item.addEventListener('click', deletePeriod);
+    item.addEventListener("click", deletePeriod);
 });
 
 function deletePeriod()
 {
-    document.getElementById(this.dataset.delete).remove();
+    let services = document.querySelectorAll(".item-service").length;
+
+    if(services > 1)
+    {
+        document.getElementById(this.dataset.delete).remove();
+    }
 }

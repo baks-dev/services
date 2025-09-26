@@ -36,9 +36,22 @@ final class ServiceInfoForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('name', TextType::class, ['required' => true, 'label' => 'Название'])
-            ->add('preview', TextareaType::class, ['required' => false, 'label' => 'Описание']);
+        $builder->add(
+            'name',
+            TextType::class,
+            [
+                'required' => true,
+                'label' => 'Название',
+            ],
+        );
+
+        $builder->add(
+            'preview',
+            TextareaType::class,
+            [
+                'required' => false,
+                'label' => 'Описание',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
