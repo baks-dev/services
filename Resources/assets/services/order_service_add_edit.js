@@ -43,7 +43,6 @@ executeFunc(function editAddOrderService()
     {
         changeOrderServiceSumByInput(orderServiceCollection)
         changeOrderServiceSumByClick(orderServiceCollection)
-        changeOrderServiceSumByDelete(orderServiceCollection)
 
         deleteOrderServiceItem(orderServiceCollection)
         initDatapickerAll()
@@ -335,8 +334,6 @@ async function submitOrderService(form)
                 let prototypPeriod = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_period`)
                 let prototypPrice = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_money`)
 
-                ///////////////
-
                 /** Данные формы */
                 const formData = Object.fromEntries(data.entries());
 
@@ -380,8 +377,6 @@ async function submitOrderService(form)
                 prototypPeriod.value = formPeriodUid // uuid
                 prototypPeriod.textContent = formPeriodTime // text
 
-                ///////////////
-
                 if(false === isOrderServiceUnique(formId, formDate, formPeriodUid))
                 {
                     /** Закрываем модальное окно */
@@ -411,12 +406,12 @@ async function submitOrderService(form)
 
                     changeOrderServiceSumByInput(prototypItem)
                     changeOrderServiceSumByClick(prototypItem)
-                    changeOrderServiceSumByDelete(prototypItem)
+
                     deleteOrderServiceItem(prototypItem)
 
                     let result = parseFloat(formPrice.replace(",", "."));
 
-                    modifyOrderTotalSum(result, '+')
+                    modifyTotalOrderSum()
                 }
             }
 
@@ -462,8 +457,7 @@ function isOrderServiceUnique(servValue, dateValue, periodValue)
     return true;
 }
 
-//-------------------------------------
-
+/** Изменяем стоимость по вводу */
 function changeOrderServiceSumByInput(element)
 {
     element.querySelectorAll('.order-service-price').forEach(function(input)
@@ -476,8 +470,7 @@ function changeOrderServiceSumByInput(element)
 
             timer = setTimeout(() =>
             {
-                serviceSum()
-                orderSum()
+                modifyTotalOrderSum()
 
             }, 1000);
 
@@ -485,11 +478,9 @@ function changeOrderServiceSumByInput(element)
     });
 }
 
-//-------------------------------------
-
+/** Изменяем стоимость по клику */
 function changeOrderServiceSumByClick(element)
 {
-
     element.querySelectorAll('.order-service-price-minus').forEach(function(btn)
     {
         btn.addEventListener('click', function()
@@ -517,8 +508,8 @@ function changeOrderServiceSumByClick(element)
 
             priceInput.value = result;
 
-            /** Модифицируем общую цену */
-            modifyOrderTotalSum(this.dataset.step, '-')
+            modifyTotalOrderSum()
+
 
         });
 
@@ -539,47 +530,21 @@ function changeOrderServiceSumByClick(element)
                 return;
             }
 
-            /** изменение value у input */
             priceInput.value = result;
 
-            /** Модифицируем общую цену */
-            modifyOrderTotalSum(this.dataset.step, '+')
+            modifyTotalOrderSum()
 
         });
 
     });
 }
 
-//-------------------------------------
-
-function changeOrderServiceSumByDelete(element)
-{
-    element.querySelectorAll('.del-item-service').forEach(function(btn)
-    {
-
-        btn.addEventListener('click', function()
-        {
-            let priceInput = document.getElementById(this.dataset.id);
-
-            console.log('priceInput', priceInput)
-            console.log('priceInput.value', priceInput.value)
-
-            let result = parseFloat(priceInput.value.replace(",", "."));
-
-            /** Модифицируем общую цену */
-            modifyOrderTotalSum(priceInput.value, '-')
-
-        });
-    });
-}
-
-//-------------------------------------
-
-function serviceSum()
+/** Модифицируем стоимость за услуги и общую стоимость */
+function modifyTotalOrderSum()
 {
     let serviceCollection = document.getElementById('service_сollection_edit_order');
     let serviceSumEl = document.getElementById('service_sum');
-    let sumResult = 0
+    let serviceSumResult = 0
 
     serviceCollection.querySelectorAll('.order-service-price').forEach(function(input)
     {
@@ -599,75 +564,31 @@ function serviceSum()
             inputPriceInt = priceMin
         }
 
-        sumResult += inputPriceInt
+        serviceSumResult += inputPriceInt
     });
 
-    let sumFormatted = sumResult.toLocaleString("ru-RU") + " ₽";
-    serviceSumEl.textContent = sumFormatted
-}
+    /** Изменение общей стоимости за услуги */
+    let serviceSumFormatted = serviceSumResult.toLocaleString("ru-RU") + " ₽";
+    serviceSumEl.textContent = serviceSumFormatted
 
-//-------------------------------------
-
-function orderSum()
-{
-    let totalSum = document.getElementById('total_all_sum');
-
-    let serviceSum = document.getElementById('service_sum');
-    let serviceSumParse = serviceSum.textContent.replace(/[^\d]/g, "");
-    let serviceSumInt = parseInt(serviceSumParse, 10);
+    /** Стоимость Итого */
+    let totalAllSumEl = document.getElementById('total_all_sum');
 
     /** С учетом стоимости продуктов */
     let productSum = document.getElementById('total_product_sum');
     let productSumParse = productSum.textContent.replace(/[^\d]/g, "");
     let productSumInt = parseInt(productSumParse, 10);
 
-    const res = serviceSumInt + productSumInt
+    let serviceSumParse = serviceSumEl.textContent.replace(/[^\d]/g, "");
+    let serviceSumInt = parseInt(serviceSumParse, 10);
 
-    const sumFormatted = res.toLocaleString("ru-RU") + " ₽";
+    const totalAllSumRes = productSumInt + serviceSumInt
 
-    totalSum.textContent = sumFormatted
+    const totalSumFormatted = totalAllSumRes.toLocaleString("ru-RU") + " ₽";
+    totalAllSumEl.textContent = totalSumFormatted
 }
 
-
-//-------------------------------------
-
-function modifyOrderTotalSum(step, operator)
-{
-    let orderTotalSum = document.getElementById('total_all_sum');
-
-    let stepInt = parseInt(step, 10);
-
-    let orderTotalSumContent = orderTotalSum.textContent.replace(/[^\d]/g, "")
-    let orderTotalSumInt = parseInt(orderTotalSumContent, 10);
-
-    let orderTotalSumResult = operator === "+"
-        ? orderTotalSumInt + stepInt
-        : orderTotalSumInt - stepInt;
-
-    let orderTotalSumFormatted = orderTotalSumResult.toLocaleString("ru-RU") + " ₽";
-
-    orderTotalSum.textContent = orderTotalSumFormatted
-
-    let orderServiceTitalSum = document.getElementById('service_sum');
-    let orderServiceTotalSumInt = 0;
-
-    if(orderServiceTitalSum.textContent !== 'NaN')
-    {
-        let orderServiceTotalSumContent = orderServiceTitalSum.textContent.replace(/[^\d]/g, "")
-        orderServiceTotalSumInt = parseInt(orderServiceTotalSumContent, 10);
-    }
-
-    let orderServiceTotalSumResult = operator === "+"
-        ? orderServiceTotalSumInt + stepInt
-        : orderServiceTotalSumInt - stepInt;
-
-    let orderServiceTotalSumFormatted = orderServiceTotalSumResult.toLocaleString("ru-RU") + " ₽";
-
-    orderServiceTitalSum.textContent = orderServiceTotalSumFormatted
-}
-
-//-------------------------------------
-
+/** Кнопки удаления элемента коллекции */
 function deleteOrderServiceItem(element)
 {
     element.querySelectorAll('.del-item-service').forEach(function(btn)
@@ -705,13 +626,15 @@ function deleteOrderServiceItem(element)
                 addBtn.setAttribute('data-index', newIndex)
 
                 itemForDelete.remove()
+
+                modifyTotalOrderSum()
+
             }
         });
     });
 }
 
-//-------------------------------------
-
+/** Инициализация Datapicker + отправка формы при выборе даты */
 function initDatapickerForField(field)
 {
     const datepicker = MCDatepicker.create({
@@ -738,15 +661,13 @@ function initDatapickerForField(field)
     });
 }
 
-//-------------------------------------
-
+/** Инициализация Datapicker + обновление поля с периодами */
 function initDatapickerAll()
 {
     const rows = document.querySelectorAll("#service_сollection_edit_order tr");
 
     for(const row of rows)
     {
-
         const dateInput = row.querySelector('input[name*="[date]"]');
 
         if(!dateInput)
@@ -754,7 +675,7 @@ function initDatapickerAll()
             continue;
         }
 
-        let JrKZvcNyRepeat = 100;
+        let x9y7P90sZsRepeat = 100;
 
         setTimeout(function x9y7P90sZs()
         {
@@ -763,7 +684,6 @@ function initDatapickerAll()
 
             if(typeof MCDatepicker === 'object')
             {
-
                 const [day, month, year] = dateInput.value.split('.');
                 $selectedDate = new Date(+year, month - 1, +day);
 
@@ -795,27 +715,24 @@ function initDatapickerAll()
 
                 datepicker.onSelect(function(date, formatedDate)
                 {
-
                     let dateFieldId = dateInput.id
 
-                    checkServicePeriod(editOrderForm, dateFieldId);
+                    updateServicePeriodField(editOrderForm, dateFieldId);
                 });
-
 
                 return;
             }
 
-            JrKZvcNyRepeat = JrKZvcNyRepeat * 2;
-            setTimeout(JrKZvcNy, 100);
+            x9y7P90sZsRepeat = x9y7P90sZsRepeat * 2;
+            setTimeout(x9y7P90sZs, 100);
 
         }, 100);
 
     }
 }
 
-//-------------------------------------
-
-async function checkServicePeriod(form, fieldId)
+/** Обновляет поле с периодами */
+async function updateServicePeriodField(form, fieldId)
 {
     const data = new FormData(form);
 
@@ -864,8 +781,14 @@ async function checkServicePeriod(form, fieldId)
         })
 }
 
-//-------------------------------------
+/** Парсинг данных формы из ответа сервера */
+function parseFormData(data)
+{
+    const parser = new DOMParser();
+    return parser.parseFromString(data, 'text/html');
+}
 
+/** Плавная замена элемента формы */
 function fieldReplace(oldField, newField)
 {
     newField.classList.add("fade");
@@ -876,10 +799,4 @@ function fieldReplace(oldField, newField)
     newField.classList.add("show");
 }
 
-//-------------------------------------
 
-function parseFormData(data)
-{
-    const parser = new DOMParser();
-    return parser.parseFromString(data, 'text/html');
-}
