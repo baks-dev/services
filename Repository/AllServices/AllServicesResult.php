@@ -23,19 +23,20 @@
 
 namespace BaksDev\Services\Repository\AllServices;
 
+use BaksDev\Reference\Currency\Type\Currency;
 use BaksDev\Reference\Money\Type\Money;
 use BaksDev\Services\Type\Event\ServiceEventUid;
 
-final class AllServicesResult
+final readonly class AllServicesResult
 {
     public function __construct(
         private string $id,
         private string $name,
         private ?string $preview,
 
-        private int|null $price,
+        private int $price,
+        private string $currency,
     ) {}
-
 
     public function getId(): ServiceEventUid
     {
@@ -52,15 +53,13 @@ final class AllServicesResult
         return $this->preview;
     }
 
-    public function getPrice(): Money|false
+    public function getPrice(): Money
     {
-        if(empty($this->price))
-        {
-            return false;
-        }
+        return new Money($this->price, true);
+    }
 
-        $price = new Money($this->price, true);
-
-        return $price;
+    public function getCurrency(): Currency
+    {
+        return new Currency($this->currency);
     }
 }

@@ -150,14 +150,14 @@ async function changeOrderService(form)
 
                 if(priceFormField && priceFormField.type !== "hidden")
                 {
-                    fieldReplace(document.getElementById('field_price'), result.getElementById('field_price'))
+                    animateReplace(document.getElementById('field_price'), result.getElementById('field_price'))
                 }
 
                 let dateFormField = result.getElementById('add_order_service_to_order_form_date')
 
                 if(dateFormField && dateFormField.type !== "hidden")
                 {
-                    fieldReplace(document.getElementById('field_date'), result.getElementById('field_date'))
+                    animateReplace(document.getElementById('field_date'), result.getElementById('field_date'))
                     initDatapickerForField(dateFormField)
                 }
 
@@ -166,7 +166,7 @@ async function changeOrderService(form)
                 if(periodFormField && periodFormField.type !== "hidden")
                 {
                     /** Заменяем блок с полем формы */
-                    fieldReplace(document.getElementById('field_period'), result.getElementById('field_period'))
+                    animateReplace(document.getElementById('field_period'), result.getElementById('field_period'))
 
                     const period = document.getElementById("add_order_service_to_order_form_period")
 
@@ -625,6 +625,7 @@ function deleteOrderServiceItem(element)
 
                 addBtn.setAttribute('data-index', newIndex)
 
+                /** Удаляем элемент */
                 itemForDelete.remove()
 
                 modifyTotalOrderSum()
@@ -731,7 +732,7 @@ function initDatapickerAll()
     }
 }
 
-/** Обновляет поле с периодами */
+/** Обновляет поле с периодами в основной форме */
 async function updateServicePeriodField(form, fieldId)
 {
     const data = new FormData(form);
@@ -775,7 +776,7 @@ async function updateServicePeriodField(form, fieldId)
 
             if(currentPeriod && resultPeriod)
             {
-                fieldReplace(currentPeriod, resultPeriod)
+                animateReplace(currentPeriod, resultPeriod)
             }
 
         })
@@ -788,8 +789,8 @@ function parseFormData(data)
     return parser.parseFromString(data, 'text/html');
 }
 
-/** Плавная замена элемента формы */
-function fieldReplace(oldField, newField)
+/** Плавная замена поля формы */
+function animateReplace(oldField, newField)
 {
     newField.classList.add("fade");
 
