@@ -30,8 +30,6 @@ use BaksDev\Services\Entity\Event\Info\ServiceInfo;
 use BaksDev\Services\Entity\Event\Invariable\ServiceInvariable;
 use BaksDev\Services\Entity\Event\Price\ServicePrice;
 use BaksDev\Services\Entity\Service;
-use BaksDev\Users\Profile\UserProfile\Entity\Event\Personal\UserProfilePersonal;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
