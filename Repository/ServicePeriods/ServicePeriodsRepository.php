@@ -26,8 +26,10 @@ declare(strict_types=1);
 namespace BaksDev\Services\Repository\ServicePeriods;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
+use BaksDev\Orders\Order\Entity\Event\OrderEvent;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Services\OrderService;
+use BaksDev\Orders\Order\Type\Status\OrderStatus;
 use BaksDev\Services\Entity\Event\Invariable\ServiceInvariable;
 use BaksDev\Services\Entity\Event\Period\ServicePeriod;
 use BaksDev\Services\Entity\Event\Price\ServicePrice;
@@ -129,6 +131,20 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
                 'ord',
                 'ord.event = order_service.event OR ord.event IS NULL'
             );
+
+        /* Отобразить информацию о резервах для всех заказов, кроме статуса canceled */
+        $dbal->join(
+            'ord',
+            OrderEvent::class,
+            'order_event',
+            'ord.event = order_event.id AND order_event.status <> :status'
+        )
+            ->setParameter(
+                'status',
+                OrderStatus\Collection\OrderStatusCanceled::class,
+                OrderStatus::TYPE
+            )
+        ;
 
 
         /** Агрегация данных по резервам */

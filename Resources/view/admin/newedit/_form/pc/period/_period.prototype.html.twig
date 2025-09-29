@@ -1,10 +1,4 @@
-{# <div class="card w-100 border-light">
-
-    <div class="card-body text-start pb-0"> #}
-
-        {# Коллекция диапазонов/периодов  #}
-
-<div class="d-flex justify-content-between align-items-center gap-3">
+<div class="d-flex justify-content-between gap-3" style="align-items: end;">
 
     <button type="button"
             class="btn-outline-danger del-item-period border-0 btn"
@@ -21,17 +15,13 @@
                           height="2" rx="1"
                           transform="rotate(45 8.46447 7.05029)"
                           fill="currentColor"></rect>
-                </svg>
-            </span>
+                </svg></span>
     </button>
 
-
-    <div class="w-100">{{ form_widget(form.frm, { label : 'Время от' }) }}</div>
-    <div class="w-100">{{ form_widget(form.upto, { label : 'Время до' }) }}</div>
+    <div class="w-100">{{ form_widget(form.period.vars.prototype.frm, { label : 'Время от' }) }}</div>
+    <div class="w-100">{{ form_widget(form.period.vars.prototype.upto, { label : 'Время до' }) }}</div>
 
 </div>
-{# <div class="time-error time-error0 invalid-feedback"></div> #}
 
-{#
-</div>
-</div> #}
+{# Вывод ошибки если значение "Время от" больше значение "Время до" #}
+<div class="time-error time-error0 invalid-feedback"></div>
