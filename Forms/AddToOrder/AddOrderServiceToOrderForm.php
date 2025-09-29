@@ -32,6 +32,7 @@ use BaksDev\Orders\Order\Repository\Services\OneServiceById\OneServiceByIdInterf
 use BaksDev\Orders\Order\Type\OrderService\Period\ServicePeriodUid;
 use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Services\Repository\AllServicesByProfile\AllServicesByProfileInterface;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
@@ -51,6 +52,7 @@ final class AddOrderServiceToOrderForm extends AbstractType
         private readonly AllServicesByProfileInterface $allServicesByProfile,
         private readonly AllServicePeriodByDateInterface $allServicePeriodByDateRepository,
         private readonly OneServiceByIdInterface $oneServiceRepository,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -88,7 +90,9 @@ final class AddOrderServiceToOrderForm extends AbstractType
                 /** Если выбран сервис, добавляем поля */
                 if(false === empty($data['serv']))
                 {
-                    $service = $this->oneServiceRepository->find(new ServiceUid($data['serv']));
+                    $service = $this->oneServiceRepository
+                        ->byProfile($this->UserProfileTokenStorage->getProfile())
+                        ->find(new ServiceUid($data['serv']));
 
                     /** Name */
                     $form->add('name', HiddenType::class, ['empty_data' => $service->getName()]);
