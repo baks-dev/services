@@ -1,53 +1,65 @@
-{% trans_default_domain('service.admin') %}
+{{ form_row(form.info.name, { label: 'Название' }) }}
 
-<div class="modal-content p-3 border-bottom border-5 border-primary">
-    <div class="modal-header">
+{{ form_row(form.info.preview, { label: 'Описание услуги' }) }}
 
-        <h5 class="modal-title">
-            {# Заголовок модального окна #}
-            {{ 'page.edit'|trans }}
-        </h5>
+<div class="d-flex gap-2 justify-content-between align-items-baseline">
 
-        <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
+    <div class="w-50">
+
+        {{ form_row(form.price.price, {
+            label: 'Стоимость услуги',
+        }) }}
+
     </div>
 
-    <div class="modal-body">
+    <div class="w-50">
+        {{ form_row(form.price.currency, {
+            label: 'Валюта',
+            attr: { 'data-select' : 'select2', class: 'nice-select mb-0'},
+        }) }}
+    </div>
 
-        {{ form_row(form.info.name, { label: 'Название' }) }}
+</div>
 
-        {{ form_row(form.info.preview, { label: 'Опсиание услуги' }) }}
+{# Периоды #}
 
-        {# Периоды #}
+<div class="card-header border-light bg-body">
+    <div class="card-title">
+        <h4>
+            Периоды
+        </h4>
+    </div>
+</div>
 
-        <div class="card-header border-light bg-body">
-            <div class="card-title">
-                <h4>
-                    Периоды
-                </h4>
+<div class="card w-100 border-light">
+    <div class="card-body pb-0" id="collection-period">
+
+        <div class="d-flex justify-content-between gap-3 mb-3">
+            <div class="w-25">&nbsp;</div>
+            <div class="w-100">Время от</div>
+            <div class="w-100">Время до</div>
+        </div>
+        {% for period_count, form in form.period %}
+            <div class='mb-3 item-service' id='item_{{ form.vars.id }}'>
+                {{ include(_self|replace({ "form.html.twig": "/period/_period.html.twig" })) }}
             </div>
-        </div>
+        {% endfor %}
+    </div>
+</div>
 
-        <div class="card-body pb-0" id="collection-period">
-            {% for form in form.period %}
-                <div class='mb-3' id='item_{{ form.vars.id }}'>
-                    {{ include(_self|replace({ "content.html.twig": "/period/_period.html.twig" })) }}
-                </div>
-            {% endfor %}
-        </div>
+<div class="card-footer border-light bg-body d-flex justify-content-between align-items-center">
+    <button
+            type="button"
+            id="periodAddCollection"
+            class="btn btn-sm btn-outline-primary border-0 period-add-collection"
+            data-prototype="{{ include(_self|replace({ "form.html.twig": "period/_period.prototype.html.twig" }))|e('html_attr') }}"
 
-        <div class="card-footer border-light bg-body d-flex justify-content-between align-items-center">
-            <button type="button"
-                    id="periodAddCollection"
-                    class="btn btn-sm btn-outline-primary border-0 period-add-collection"
-                    data-prototype="{{ include(_self|replace({ "content.html.twig": "period/_period.prototype.html.twig" }))|e('html_attr') }}"
+            data-collection="{{ form.period.vars.id }}-collection"
+            data-index="{{ form.period.count }}"
+            data-period="{{ form.period.vars.name }}"
+    >
 
-                    data-collection="{{ form.period.vars.id }}-collection"
-                    data-index="{{ form.period.count }}"
-                    data-period="{{ form.period.vars.name }}"
-
-            >
-
-                <span class="svg-icon svg-icon-2">
+                    <span class="svg-icon svg-icon-2">
 							<svg xmlns="http://www.w3.org/2000/svg"
                                  width="24"
                                  height="24"
@@ -65,32 +77,6 @@
 								<rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
 							</svg>
 						</span>
-                Добавить еще диапазон
-            </button>
-        </div>
-
-    </div>
-
-
-    <div class="modal-footer">
-        <div class="flex-grow-1">
-            &nbsp;
-        </div>
-        <div class="d-flex gap-3">
-            {# Отмена #}
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                {{ 'btn.cancel'|trans({}, 'core.btn') }}
-            </button>
-
-            {# Дбавить #}
-            {{ form_widget(form.service, { label: '
-                    <span>'~ 'btn.edit'|trans({}, 'core.btn') ~'</span>
-                    <span class="spinner-border spinner-border-sm vertical-middle d-none"></span>
-
-                '}) }}
-        </div>
-    </div>
-
+        Добавить еще диапазон
+    </button>
 </div>
-
-

@@ -147,8 +147,9 @@ if($addButtonPeriod)
             const delButton = div.querySelector(".del-item-period");
             delButton.dataset.delete = "item_service_form_period_" + (index).toString();
 
-            //const timeErrorDiv = div.querySelector(".time-error");
-            //timeErrorDiv.classList.add("time-error" + index);
+            /* Добавить div-элемент для вывода ошибки если значение "Время от" больше значение "Время до" */
+            const timeErrorDiv = div.querySelector(".time-error");
+            timeErrorDiv.classList.add("time-error" + index);
 
 
             /* Увеличиваем data-index на 1 после вставки новой коллекции */
