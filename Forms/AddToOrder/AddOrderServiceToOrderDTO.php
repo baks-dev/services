@@ -30,6 +30,7 @@ use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Orders\Order\UseCase\Admin\Edit\Service\Price\OrderServicePriceDTO;
 use BaksDev\Reference\Money\Type\Money;
 use DateTimeImmutable;
+use Generator;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see OrderService */
@@ -54,6 +55,8 @@ final class AddOrderServiceToOrderDTO
     public ?string $name = null;
 
     public ?string $time = null;
+
+    public array|false $allServices = false;
 
     public function __construct()
     {
@@ -122,5 +125,20 @@ final class AddOrderServiceToOrderDTO
     public function setTime(?string $time): void
     {
         $this->time = $time;
+    }
+
+    public function getAllServices(): array|false
+    {
+        return $this->allServices;
+    }
+
+    public function setAllServices(false|Generator $services): self
+    {
+        if(false !== $services)
+        {
+            $this->allServices = iterator_to_array($services);
+        }
+
+        return $this;
     }
 }
