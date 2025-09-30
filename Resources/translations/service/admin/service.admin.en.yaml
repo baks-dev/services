@@ -23,6 +23,8 @@ form:
     trans:
       name: 'service name'
     url: 'service symbol code'
+  empty: 'The list of services is empty. To add a service to the order, you must first create a service.'
+
 success:
   new: 'Service added successfully'
   update: 'Service updated successfully'

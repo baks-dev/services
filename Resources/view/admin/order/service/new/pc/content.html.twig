@@ -1,5 +1,31 @@
+{# @var data \BaksDev\Services\Forms\AddToOrder\AddOrderServiceToOrderDTO #}
+
+{% trans_default_domain('service.admin') %}
+
+{% set data = form.vars.data %}
+
+{% if data.allServices is empty %}
+
+    <div class="w-100 mb-0 alert alert-warning" role="alert" style="min-width: 837px; max-width: 837px;">
+        <div class="d-flex align-items-baseline gap-3">
+            <div>
+                <div class="icon rounded-circle bg-contain p-2 bg-primary text-white"
+                     style="width: 10px; height: 10px;">
+                    <span class="small">!</span>
+                </div>
+            </div>
+
+            {{ 'form.empty'|trans }}
+        </div>
+    </div>
+
+{% endif %}
+
 {{ form_start(form,
-    { attr: { style: 'min-width: 837px; max-width: 837px;' } }
+    { attr: {
+        class: (data.allServices is empty) ? 'd-none' : '',
+        style: 'min-width: 837px; max-width: 837px;'
+    } }
 ) }}
 
 <div class="pe-auto border-bottom">
@@ -52,3 +78,4 @@
 </div>
 
 {{ form_end(form) }}
+

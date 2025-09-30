@@ -1,7 +1,15 @@
+{# @var data \BaksDev\Services\Forms\AddToOrder\AddOrderServiceToOrderDTO #}
+
+{% trans_default_domain('service.admin') %}
+
+{% set data = form.vars.data %}
+
 <div class="modal-dialog modal-dialog-centered" style="max-width: 800px;">
 
     {{ form_start(form,
-        { attr: { style: 'min-width: 500px;' } }
+        { attr: {
+            style: 'min-width: 500px;'
+        } }
     ) }}
 
     <div class="modal-content p-3 border-bottom border-5 border-primary">
@@ -19,7 +27,25 @@
 
             <div class="tab-content w-100">
 
-                <div id="services">
+                {% if data.allServices is empty %}
+
+                    <div class="w-100 mb-0 alert alert-warning" role="alert">
+                        <div class="d-flex align-items-baseline gap-3">
+                            <div>
+                                <div class="icon rounded-circle bg-contain p-2 bg-primary text-white"
+                                     style="width: 10px; height: 10px;">
+                                    <span class="small">!</span>
+                                </div>
+                            </div>
+
+                            {{ 'form.empty'|trans }}
+
+                        </div>
+                    </div>
+
+                {% endif %}
+
+                <div id="services" class="{{ data.allServices is empty ? 'd-none' : '' }}">
                     {{ include(_self|replace({ "content.html.twig": "form/services.html.twig" })) }}
                 </div>
 

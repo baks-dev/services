@@ -31,7 +31,6 @@ use BaksDev\Orders\Order\Repository\Services\AllServicePeriodByDate\AllServicePe
 use BaksDev\Orders\Order\Repository\Services\OneServiceById\OneServiceByIdInterface;
 use BaksDev\Orders\Order\Type\OrderService\Period\ServicePeriodUid;
 use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
-use BaksDev\Services\Repository\AllServicesByProfile\AllServicesByProfileInterface;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
@@ -49,7 +48,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class AddOrderServiceToOrderForm extends AbstractType
 {
     public function __construct(
-        private readonly AllServicesByProfileInterface $allServicesByProfile,
         private readonly AllServicePeriodByDateInterface $allServicePeriodByDateRepository,
         private readonly OneServiceByIdInterface $oneServiceRepository,
         private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage,
@@ -57,11 +55,14 @@ final class AddOrderServiceToOrderForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $allServicesByProfile = $this->allServicesByProfile->findAll();
+        /** @var AddOrderServiceToOrderDTO $data */
+        $data = $builder->getData();
+
+        $allServices = $data->getAllServices();
 
         $builder
             ->add('serv', ChoiceType::class, [
-                'choices' => $allServicesByProfile,
+                'choices' => false !== $allServices ? $allServices : [],
                 'choice_value' => function(?ServiceUid $serviceInfo) {
                     return $serviceInfo?->getValue();
                 },

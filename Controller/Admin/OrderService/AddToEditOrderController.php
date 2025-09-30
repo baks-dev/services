@@ -8,6 +8,7 @@ use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Services\Forms\AddToOrder\AddOrderServiceToOrderDTO;
 use BaksDev\Services\Forms\AddToOrder\AddOrderServiceToOrderForm;
+use BaksDev\Services\Repository\AllServicesByProfile\AllServicesByProfileInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,13 +21,19 @@ final class AddToEditOrderController extends AbstractController
 {
     #[Route('/admin/order/service/edit', name: 'admin.order.service.edit', methods: ['GET', 'POST',])]
     public function edit(
-        Request $request
+        Request $request,
+        AllServicesByProfileInterface $allServicesByProfile,
     ): Response
     {
+        $allServicesByProfile = $allServicesByProfile->findAll();
+
+        $AddOrderServiceToOrderDTO = new AddOrderServiceToOrderDTO();
+        $AddOrderServiceToOrderDTO->setAllServices($allServicesByProfile);
+
         $addForm = $this
             ->createForm(
                 type: AddOrderServiceToOrderForm::class,
-                data: new AddOrderServiceToOrderDTO(),
+                data: $AddOrderServiceToOrderDTO,
                 options: ['action' => $this->generateUrl('services:admin.order.service.edit')]
             );
 
