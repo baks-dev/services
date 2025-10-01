@@ -11,8 +11,8 @@
 
 {# ---- CSS ------------------------------------------------------------ #}
 {% block stylesheets %}
-    <link href="/assets/plugins/datepicker/datepicker.min.css" rel="stylesheet">
-    <link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet">
+    <link href="/assets/{{ version }}/plugins/datepicker/datepicker.min.css" rel="stylesheet">
+    <link href="/assets/{{ version }}/plugins/nice-select2/nice-select2.min.css" rel="stylesheet">
 {% endblock %}
 
 
@@ -23,5 +23,5 @@
 
 {% block javascript %}
 
-<script nonce='{{ csp_nonce() }}' async  data-src="/assets/services/services.min.js?v={{ version }}"  class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/{{ version }}/services/services.min.js?v={{ version }}"  class="lazy"></script>
 {% endblock %}
