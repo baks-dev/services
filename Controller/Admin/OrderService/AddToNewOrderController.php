@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_SERVICE_INDEX')]
+#[RoleSecurity(['ROLE_SERVICE_INDEX', 'ROLE_ORDERS_NEW'])]
 final class AddToNewOrderController extends AbstractController
 {
     #[Route('/admin/order/service/add/new', name: 'admin.order.service.new', methods: ['GET', 'POST',])]

@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_SERVICE_INDEX')]
+#[RoleSecurity(['ROLE_SERVICE_INDEX', 'ROLE_ORDERS_EDIT'])]
 final class AddToEditOrderController extends AbstractController
 {
     #[Route('/admin/order/service/edit', name: 'admin.order.service.edit', methods: ['GET', 'POST',])]
