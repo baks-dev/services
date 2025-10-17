@@ -25,7 +25,8 @@ namespace BaksDev\Services\Controller\Admin;
 
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
-use BaksDev\Services\Entity\Event\ServiceEvent;
+use BaksDev\Orders\Order\Repository\Services\OneServiceById\OneServiceByIdInterface;
+use BaksDev\Services\Entity\Service;
 use BaksDev\Services\Repository\ServicePeriods\ServicePeriodsInterface;
 use DateInterval;
 use DatePeriod;
@@ -42,15 +43,16 @@ final class ServiceController extends AbstractController
 
     #[Route('/admin/service/{id}', name: 'admin.service', defaults: ['id' => null], methods: ['GET', 'POST'])]
     public function service(
-        #[MapEntity] ServiceEvent $serviceEvent,
+        #[MapEntity] Service $service,
         Request $request,
-        ServicePeriodsInterface $servicePeriods
+        ServicePeriodsInterface $servicePeriods,
+        OneServiceByIdInterface $serviceById
     )
     {
 
         /* Получаем список периодов по услуге */
         $periods = $servicePeriods
-            ->findAll($serviceEvent->getId());
+            ->findAll($service->getId());
 
         $periods = iterator_to_array($periods);
 
@@ -73,11 +75,13 @@ final class ServiceController extends AbstractController
             return $dates;
         };
 
+        $serviceData = $serviceById->find($service->getId());
+
         return $this->render(
             [
                 'periods' => $periods,
                 'dates' => $dates(),
-                'name' => $serviceEvent->getInfo()->getName(),
+                'name' => $serviceData->getName(),
             ]
         );
     }
