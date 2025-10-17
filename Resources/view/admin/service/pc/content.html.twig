@@ -1,19 +1,19 @@
 {% trans_default_domain('service.admin') %}
 
 {% macro make_reserve(item, date, price) %}
-{#    <a#}
-{#        href="{{ path('services:admin.basket', {#}
-{#            service: item.serviceId,#}
-{#            period: item.periodId,#}
-{#            date: date| date("Y-m-d"),#}
-{#            event: item.serviceEvent#}
-{#        }) }}"#}
-{#        class="btn-link text-decoration-none w-100 modal-link disabled"#}
-{#        data-bs-toggle=modal#}
-{#        data-bs-target="#modal"#}
-{#    >#}
-{#        {{ money(price, item.serviceCurrency) }}#}
-{#    </a>#}
+    {#    <a #}
+    {#        href="{{ path('services:admin.basket', { #}
+    {#            service: item.serviceId, #}
+    {#            period: item.periodId, #}
+    {#            date: date| date("Y-m-d"), #}
+    {#            event: item.serviceEvent #}
+    {#        }) }}" #}
+    {#        class="btn-link text-decoration-none w-100 modal-link disabled" #}
+    {#        data-bs-toggle=modal #}
+    {#        data-bs-target="#modal" #}
+    {#    > #}
+    {#        {{ money(price, item.serviceCurrency) }} #}
+    {#    </a> #}
 
     <span>{{ money(price, item.serviceCurrency) }}</span>
 {% endmacro %}
@@ -27,17 +27,17 @@
             {{ include(_self|replace({ "content.html.twig": "_breadcrumb.html.twig" })) }}
         </div>
 
-        <h2>Запись на {{ name|lower }}</h2>
+        <h2>Расписание услуги "{{ name }}"</h2>
 
         {# Слоты #}
-        {% for p, item in periods %}
+        {% for p, period in periods %}
 
             <div style="display: flex; flex-direction: row">
-                <div class="{{ item ? "p-2" : "p-4" }}"
-                     style="  {{ item ? "border:1px solid #000088;" : "" }} height: 50px; width: 100px; display: flex;align-items: center; box-shadow: 1px 1px 3px 1px #c0ced4;">
-                    {% if item %}
-                        <span>{{ item.timeFrom| date("H:i") }}</span> -
-                        <span>{{ item.timeTo| date("H:i") }}</span>
+                <div class="{{ period ? "p-2" : "p-4" }}"
+                     style="  {{ period ? "border:1px solid #000088;" : "" }} height: 50px; width: 100px; display: flex;align-items: center; box-shadow: 1px 1px 3px 1px #c0ced4;">
+                    {% if period %}
+                        <span>{{ period.timeFrom| date("H:i") }}</span> -
+                        <span>{{ period.timeTo| date("H:i") }}</span>
                     {% endif %}
 
                 </div>
@@ -53,35 +53,38 @@
                     {% else %}
                         <div class="p-2"
                              style="border: 1px solid #000088; height: 50px; width: 100px; display: flex;align-items: center; background-color: #c0ced4; box-shadow: 1px 1px 3px 1px #c0ced4;"
-                             title="Заказать '{{ name }}' на {{ date| date("Y:m:d") }} {{ item.timeFrom| date("H:i") }} - {{ item.timeTo| date("H:i") }}"
+                             title="Заказать '{{ name }}' на {{ date| date("Y:m:d") }} {{ period.timeFrom| date("H:i") }} - {{ period.timeTo| date("H:i") }}"
                         >
-                            {% if item %}
+                            {% if period %}
 
                                 {# TODO Персональная скидка #}
-                                {% set price = user_profile_discount(item.servicePrice) ?: item.servicePrice %}
+                                {% set price = user_profile_discount(period.servicePrice) ?: period.servicePrice %}
 
                                 <div class="p-2">
-                                    {% if item.getOrderServices %}
+
+                                    {# Получить данные по order service data #}
+                                    {% if period.getOrderServicesData %}
 
                                         {% set has_service_order = false %}
-                                        {% for order_service in item.getOrderServices %}
+                                        {% for order_service_data in period.getOrderServicesData %}
 
-                                            {% if order_service and (order_service.order_service_date| date("Y-m-d")) == date| date("Y-m-d") %}
+                                            {% if order_service_data and (order_service_data.order_service_date|date("Y-m-d")) == date| date("Y-m-d") %}
 
                                                 {% set has_service_order = true %}
-                                              <div class="bg-warning">Резерв</div>
+                                                <div class="bg-warning">Резерв</div>
 
                                             {% endif %}
+
                                         {% endfor %}
 
                                         {# Слот свободен #}
                                         {% if has_service_order == false %}
 
-                                          {{ _self.make_reserve(item, date, price) }}
+                                            {{ _self.make_reserve(period, date, price) }}
                                         {% endif %}
 
                                     {% else %}
-                                        {{ _self.make_reserve(item, date, price) }}
+                                        {{ _self.make_reserve(period, date, price) }}
                                     {% endif %}
 
                                 </div>

@@ -29,15 +29,16 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Orders\Order\Entity\Event\OrderEvent;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Services\OrderService;
+use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Orders\Order\Type\Status\OrderStatus;
 use BaksDev\Services\Entity\Event\Invariable\ServiceInvariable;
 use BaksDev\Services\Entity\Event\Period\ServicePeriod;
 use BaksDev\Services\Entity\Event\Price\ServicePrice;
 use BaksDev\Services\Entity\Event\ServiceEvent;
 use BaksDev\Services\Entity\Service;
-use BaksDev\Services\Type\Event\ServiceEventUid;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
 use Generator;
 
 final class ServicePeriodsRepository implements ServicePeriodsInterface
@@ -57,28 +58,69 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
         return $this;
     }
 
-    public function findAll(ServiceEventUid $serviceEventUid): false|Generator
+    /** Убирает дублирующийся неактивный период и добавляет данные order_service */
+    private function prepareOrderService(array $periods): array
+    {
+
+        $result = [];
+
+        /* Получить все уникальные (по "Время от") периоды */
+        foreach($periods as $period)
+        {
+            $periodFrm = new DateTimeImmutable($period['time_from'])->format('H-m-i');
+            $result[$periodFrm] = $period;
+        }
+
+
+        /* Заполнить периоды данными по order_service */
+        foreach($periods as $period)
+        {
+
+            $periodFrm = new DateTimeImmutable($period['time_from'])->format('H-m-i');
+
+            if($period['order_services'] != null)
+            {
+                $order_services = json_decode($period['order_services'], null, 512, JSON_THROW_ON_ERROR);
+                $result[$periodFrm]['order_services_data'][$period['id']] = $order_services;
+            }
+            else
+            {
+                $result[$periodFrm]['order_services_data'][$period['id']] = [];
+            }
+
+        }
+
+        return $result;
+    }
+
+
+    public function findAll(ServiceUid $serviceUid): false|Generator
     {
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $dbal->from(ServicePeriod::class, 'period')
-            ->addSelect('period.id')
-            ->addSelect('period.frm as time_from')
-            ->addSelect('period.upto as time_to');
 
-        $dbal->where('period.event = :serviceEventUid')
-            ->setParameter('serviceEventUid', $serviceEventUid, ServiceEventUid::TYPE);
+        $dbal->from(Service::class, 'service')
+            ->addSelect('service.id as service_id');
 
-        $dbal
-            ->addSelect('service.id as service_id')
-            ->leftJoin(
-                'period',
-                Service::class,
-                'service',
-                'period.event = service.event'
+        $dbal->where('service.id = :serv')
+            ->setParameter(
+                key:'serv',
+                value: $serviceUid,
+                type: ServiceUid::TYPE
             );
+
+        /** Активное событие */
+        $dbal
+            ->addSelect('service_event.id as service_event')
+            ->join(
+                'service',
+                ServiceEvent::class,
+                'service_event',
+                'service_event.main = service.id'
+            );
+
         $dbal
             ->join(
                 'service',
@@ -93,18 +135,23 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
                 key: 'profile',
                 value: ($this->profile instanceof UserProfileUid) ? $this->profile : $this->UserProfileTokenStorage->getProfile(),
                 type: UserProfileUid::TYPE,
-            );;
+            );
 
 
+        /* Period */
         $dbal
-            ->addSelect('service_event.id as service_event')
-            ->leftJoin(
-                'period',
-                ServiceEvent::class,
+            ->addSelect('period.id')
+            ->addSelect('period.frm as time_from')
+            ->addSelect('period.upto as time_to')
+            ->join(
                 'service_event',
+                ServicePeriod::class,
+                'period',
                 'period.event = service_event.id'
             );
 
+
+        /* Price */
         $dbal
             ->addSelect('price.price as service_price')
             ->addSelect('price.currency as service_currency')
@@ -115,15 +162,17 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
             );
 
 
+        /* OrderService */
         $dbal
             ->leftJoin(
                 'period',
                 OrderService::class,
                 'order_service',
-                'period.id = order_service.period '
+                'order_service.period = period.id'
             );
 
 
+        /* Order */
         $dbal
             ->leftJoin(
                 'order_service',
@@ -132,35 +181,34 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
                 'ord.event = order_service.event OR ord.event IS NULL'
             );
 
+
         /* Отобразить информацию о резервах для всех заказов, кроме статуса canceled */
-        $dbal->join(
-            'ord',
-            OrderEvent::class,
-            'order_event',
-            'ord.event = order_event.id AND order_event.status <> :status'
-        )
+        $dbal
+            ->leftJoin(
+                'ord',
+                OrderEvent::class,
+                'order_event',
+                'ord.event = order_event.id AND order_event.status <> :status'
+            )
             ->setParameter(
                 'status',
                 OrderStatus\Collection\OrderStatusCanceled::class,
                 OrderStatus::TYPE
-            )
-        ;
+            );
 
 
         /** Агрегация данных по резервам */
         $dbal->addSelect(
             "
-            JSON_AGG( DISTINCT
-                 CASE
-                     WHEN order_service.event IS NOT NULL AND ord.event = order_service.event
-                     THEN
-                         JSONB_BUILD_OBJECT (
-                            'order_service_date', order_service.date,
-                            'order_service_event', order_service.event
-                         )
-                     ELSE NULL
-                END
-            ) AS order_services"
+             CASE
+                 WHEN order_service.event IS NOT NULL AND ord.event = order_service.event
+                 THEN
+                     JSONB_BUILD_OBJECT (
+                        'order_service_date', order_service.date,
+                        'order_service_event', order_service.event
+                     )
+                 ELSE NULL
+             END AS order_services"
         );
 
 
@@ -168,10 +216,12 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
 
         $dbal->orderBy('period.id', 'ASC');
 
-        $result = $dbal
-            // ->enableCache('services', 3600)
-            ->fetchAllHydrate(ServicePeriodResult::class);
+        $result = $this->prepareOrderService($dbal->fetchAllAssociative());
 
-        return ($result->valid() === true) ? $result : false;
+        foreach($result as $serv)
+        {
+            yield new ServicePeriodResult(...$serv);
+        }
+
     }
 }

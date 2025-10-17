@@ -23,6 +23,7 @@
 
 namespace BaksDev\Services\Repository\AllServices;
 
+use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Reference\Currency\Type\Currency;
 use BaksDev\Reference\Money\Type\Money;
 use BaksDev\Services\Type\Event\ServiceEventUid;
@@ -31,6 +32,7 @@ final readonly class AllServicesResult
 {
     public function __construct(
         private string $id,
+        private string $event,
         private string $name,
         private ?string $preview,
 
@@ -38,9 +40,14 @@ final readonly class AllServicesResult
         private string $currency,
     ) {}
 
-    public function getId(): ServiceEventUid
+    public function getId(): ServiceUid
     {
-        return new ServiceEventUid($this->id);
+        return new ServiceUid($this->id);
+    }
+
+    public function getEvent(): ServiceEventUid
+    {
+        return new ServiceEventUid($this->event);
     }
 
     public function getName(): string

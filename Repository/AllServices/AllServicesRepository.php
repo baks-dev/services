@@ -65,7 +65,9 @@ class AllServicesRepository implements AllServicesInterface
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $dbal->addSelect('service.event as id')
+        $dbal
+            ->addSelect('service.id as id')
+            ->addSelect('service.event as event')
             ->from(Service::class, 'service');
 
         $dbal

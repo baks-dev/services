@@ -45,8 +45,16 @@ final class ServicePeriodResult
 
         private int|null $service_price,
         private string|null $service_currency,
+
+        private array $order_services_data,
+
+
     ) {}
 
+    public function getOrderServicesData(): array
+    {
+        return $this->order_services_data;
+    }
 
 
     public function getOrderServices(): ?array
