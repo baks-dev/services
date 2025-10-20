@@ -201,7 +201,7 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
         $dbal->addSelect(
             "
              CASE
-                 WHEN order_service.event IS NOT NULL AND ord.event = order_service.event
+                 WHEN order_service.event IS NOT NULL AND ord.event = order_service.event AND order_event.status IS NOT NULL
                  THEN
                      JSONB_BUILD_OBJECT (
                         'order_service_date', order_service.date,
