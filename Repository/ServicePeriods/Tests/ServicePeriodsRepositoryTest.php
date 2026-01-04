@@ -2,11 +2,13 @@
 
 namespace BaksDev\Services\Repository\ServicePeriods\Tests;
 
+use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Services\Repository\ServicePeriods\ServicePeriodResult;
 use BaksDev\Services\Repository\ServicePeriods\ServicePeriodsInterface;
-use BaksDev\Services\Type\Event\ServiceEventUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
@@ -22,29 +24,32 @@ class ServicePeriodsRepositoryTest extends KernelTestCase
         $ServicePeriodsInterface = self::getContainer()->get(ServicePeriodsInterface::class);
 
         $profile = $_SERVER['TEST_PROFILE'] ?? UserProfileUid::TEST;
-        $result = $ServicePeriodsInterface
-            ->onProfile(new UserProfileUid($profile))
-            ->findAll(new ServiceEventUid('01992ea7-fc74-767c-8d39-d936162b3632'));
 
-        if(false === $result)
+        $results = $ServicePeriodsInterface
+            ->onProfile(new UserProfileUid($profile))
+            ->findAll(new ServiceUid(ServiceUid::TEST));
+
+        if(false === $results || false === $results->valid())
         {
             return;
         }
 
-        $ServicePeriodResult = $result->current();
-
-        // Вызываем все геттеры
-        $reflectionClass = new \ReflectionClass(ServicePeriodResult::class);
-        $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-
-        foreach($methods as $method)
+        foreach($results as $ServicePeriodResult)
         {
-            // Методы без аргументов
-            if($method->getNumberOfParameters() === 0)
+            // Вызываем все геттеры
+            $reflectionClass = new ReflectionClass(ServicePeriodResult::class);
+            $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+
+            foreach($methods as $method)
             {
-                // Вызываем метод
-                $data = $method->invoke($ServicePeriodResult);
+                // Методы без аргументов
+                if($method->getNumberOfParameters() === 0)
+                {
+                    // Вызываем метод
+                    $data = $method->invoke($ServicePeriodResult);
+                }
             }
         }
+
     }
 }

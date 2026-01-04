@@ -94,6 +94,9 @@ final class ServicePeriodsRepository implements ServicePeriodsInterface
     }
 
 
+    /**
+     * @return Generator<ServicePeriodResult>|false
+     */
     public function findAll(ServiceUid $serviceUid): false|Generator
     {
         $dbal = $this->DBALQueryBuilder

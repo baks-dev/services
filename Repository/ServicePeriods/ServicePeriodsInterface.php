@@ -24,10 +24,12 @@
 namespace BaksDev\Services\Repository\ServicePeriods;
 
 use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
-use BaksDev\Services\Type\Event\ServiceEventUid;
 use Generator;
 
 interface ServicePeriodsInterface
 {
+    /**
+     * @return Generator<ServicePeriodResult>|false
+     */
     public function findAll(ServiceUid $serviceUid): false|Generator;
 }
