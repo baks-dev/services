@@ -112,9 +112,9 @@ class ServiceEvent extends EntityEvent
         return (string) $this->id;
     }
 
-    public function getId(): ServiceEventUid
+    public function getMain(): ?ServiceUid
     {
-        return $this->id;
+        return $this->main;
     }
 
     /**
@@ -125,9 +125,9 @@ class ServiceEvent extends EntityEvent
         $this->main = $main instanceof Service ? $main->getId() : $main;
     }
 
-    public function getMain(): ?ServiceUid
+    public function getId(): ServiceEventUid
     {
-        return $this->main;
+        return $this->id;
     }
 
     public function getDto($dto): mixed

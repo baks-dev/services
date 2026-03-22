@@ -65,14 +65,6 @@ class Service
     }
 
     /**
-     * Идентификатор
-     */
-    public function getId(): ServiceUid
-    {
-        return $this->id;
-    }
-
-    /**
      * Идентификатор события
      */
     public function getEvent(): ServiceEventUid
@@ -83,5 +75,13 @@ class Service
     public function setEvent(ServiceEventUid|ServiceEvent $event): void
     {
         $this->event = $event instanceof ServiceEvent ? $event->getId() : $event;
+    }
+
+    /**
+     * Идентификатор
+     */
+    public function getId(): ServiceUid
+    {
+        return $this->id;
     }
 }

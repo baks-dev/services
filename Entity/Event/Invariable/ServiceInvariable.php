@@ -30,6 +30,7 @@ use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Services\Entity\Event\ServiceEvent;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -91,7 +92,7 @@ class ServiceInvariable extends EntityReadonly
             return parent::getDto($dto);
         }
 
-        throw new \InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
+        throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
     public function setEntity($dto): mixed
@@ -101,6 +102,6 @@ class ServiceInvariable extends EntityReadonly
             return parent::setEntity($dto);
         }
 
-        throw new \InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
+        throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 }

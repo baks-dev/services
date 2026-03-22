@@ -32,26 +32,26 @@ IndexEditOrderService = 0;
 
 executeFunc(function editAddOrderService()
 {
-    const orderServiceCollection = document.getElementById('service_сollection_edit_order');
+    const orderServiceCollection = document.getElementById("service_сollection_edit_order");
 
     if(typeof orderServiceCollection === "undefined" || orderServiceCollection === null)
     {
         return false;
     }
 
-    if(orderServiceCollection.getAttribute('usage') === null)
+    if(orderServiceCollection.getAttribute("usage") === null)
     {
-        changeOrderServiceSumByInput(orderServiceCollection)
-        changeOrderServiceSumByClick(orderServiceCollection)
+        changeOrderServiceSumByInput(orderServiceCollection);
+        changeOrderServiceSumByClick(orderServiceCollection);
 
-        deleteOrderServiceItem(orderServiceCollection)
-        initDatapickerAll()
+        deleteOrderServiceItem(orderServiceCollection);
+        initDatapickerAll();
 
-        orderServiceCollection.setAttribute('usage', 'true')
+        orderServiceCollection.setAttribute("usage", "true");
         return true;
     }
 
-    const addOrderServiceButton = document.getElementById('add_item_edit_order_form_serv');
+    const addOrderServiceButton = document.getElementById("add_item_edit_order_form_serv");
 
     if(typeof addOrderServiceButton === "undefined" || addOrderServiceButton === null)
     {
@@ -65,17 +65,17 @@ executeFunc(function editAddOrderService()
         return false;
     }
 
-    let OrderService = document.getElementById(addOrderServiceForm.name + '_serv');
+    let OrderService = document.getElementById(addOrderServiceForm.name + "_serv");
 
     if(typeof OrderService === "undefined" || OrderService === null)
     {
         return false;
     }
 
-    OrderService.addEventListener('change', function(event)
+    OrderService.addEventListener("change", function(event)
     {
         changeOrderService(addOrderServiceForm);
-    })
+    });
 
     return true;
 });
@@ -87,117 +87,113 @@ async function changeOrderService(form)
     const data = new FormData(form);
 
     /** Удаляем токен из формы */
-    data.delete(form.name + '[_token]');
+    data.delete(form.name + "[_token]");
 
     /** Удаляем поля, которые формируются динамически на форме */
-    data.delete(form.name + '[name]');
-    data.delete(form.name + '[price]');
+    data.delete(form.name + "[name]");
+    data.delete(form.name + "[price]");
     //data.delete(form.name + '[period]');
-    data.delete(form.name + '[time]');
+    data.delete(form.name + "[time]");
 
     await fetch(form.action, {
-        method: form.method,
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: data,
-    })
-
-        .then((response) =>
+        method : form.method,
+        cache : "no-cache",
+        credentials : "same-origin",
+        headers : {"X-Requested-With" : "XMLHttpRequest"},
+        redirect : "follow",
+        referrerPolicy : "no-referrer",
+        body : data,
+    }).then((response) =>
+    {
+        if(response.status !== 200)
         {
-            if(response.status !== 200)
+            return false;
+        }
+
+        return response.text();
+    }).then((data) =>
+    {
+        if(data)
+        {
+
+            /** @type {Document} */
+            const result = parseFormData(data);
+
+            let nameFormField = result.getElementById("add_order_service_to_order_form_name");
+
+            /** Обнуляем форму при выборе некорректного сервиса (без uuid) */
+            if(nameFormField.value === "")
             {
-                return false;
+                document.getElementById("field_name") && (document.getElementById("field_name").innerHTML = "");
+                document.getElementById("field_price") && (document.getElementById("field_price").innerHTML = "");
+                document.getElementById("field_date") && (document.getElementById("field_date").innerHTML = "");
+                document.getElementById("field_period") && (document.getElementById("field_period").innerHTML = "");
+
+                document.getElementById("add_order_service_to_order_form_order_service_add")
+                && (document.getElementById("add_order_service_to_order_form_order_service_add").remove());
+
+                return;
             }
 
-            return response.text();
-        })
-
-        .then((data) =>
-        {
-            if(data)
+            if(nameFormField && nameFormField.value)
             {
-
-                /** @type {Document} */
-                const result = parseFormData(data);
-
-                let nameFormField = result.getElementById('add_order_service_to_order_form_name');
-
-                /** Обнуляем форму при выборе некорректного сервиса (без uuid) */
-                if(nameFormField.value === '')
-                {
-                    document.getElementById('field_name') && (document.getElementById('field_name').innerHTML = '');
-                    document.getElementById('field_price') && (document.getElementById('field_price').innerHTML = '');
-                    document.getElementById('field_date') && (document.getElementById('field_date').innerHTML = '');
-                    document.getElementById('field_period') && (document.getElementById('field_period').innerHTML = '');
-
-                    document.getElementById('add_order_service_to_order_form_order_service_add')
-                    && (document.getElementById('add_order_service_to_order_form_order_service_add').remove());
-
-                    return;
-                }
-
-                if(nameFormField && nameFormField.value)
-                {
-                    document.getElementById('field_name').replaceWith(result.getElementById('field_name'))
-                }
-
-                let priceFormField = result.getElementById('add_order_service_to_order_form_price');
-
-                serviceMlfinPrice = priceFormField.dataset.min
-
-                if(priceFormField && priceFormField.type !== "hidden")
-                {
-                    animateReplace(document.getElementById('field_price'), result.getElementById('field_price'))
-                }
-
-                let dateFormField = result.getElementById('add_order_service_to_order_form_date')
-
-                if(dateFormField && dateFormField.type !== "hidden")
-                {
-                    animateReplace(document.getElementById('field_date'), result.getElementById('field_date'))
-                    initDatapickerForField(dateFormField)
-                }
-
-                let periodFormField = result.getElementById('add_order_service_to_order_form_period');
-
-                if(periodFormField && periodFormField.type !== "hidden")
-                {
-                    /** Заменяем блок с полем формы */
-                    animateReplace(document.getElementById('field_period'), result.getElementById('field_period'))
-
-                    const period = document.getElementById("add_order_service_to_order_form_period")
-
-                    period.addEventListener('change', function(event)
-                    {
-                        let form = this.closest("form");
-                        changeOrderService(form);
-                    })
-                }
-
-                const service_buttons = document.getElementById("service_buttons")
-                const addButton = result.getElementById("add_order_service_to_order_form_order_service_add")
-
-                if(
-                    addButton &&
-                    !document.getElementById("add_order_service_to_order_form_order_service_add")
-                    && false === periodFormField.classList.contains('is-invalid')
-                )
-                {
-                    service_buttons.append(addButton)
-
-                    addButton.addEventListener("click", function(event)
-                    {
-                        let form = this.closest("form");
-
-                        submitOrderService(form)
-                    });
-                }
-
+                document.getElementById("field_name").replaceWith(result.getElementById("field_name"));
             }
-        });
+
+            let priceFormField = result.getElementById("add_order_service_to_order_form_price");
+
+            serviceMlfinPrice = priceFormField.dataset.min;
+
+            if(priceFormField && priceFormField.type !== "hidden")
+            {
+                animateReplace(document.getElementById("field_price"), result.getElementById("field_price"));
+            }
+
+            let dateFormField = result.getElementById("add_order_service_to_order_form_date");
+
+            if(dateFormField && dateFormField.type !== "hidden")
+            {
+                animateReplace(document.getElementById("field_date"), result.getElementById("field_date"));
+                initDatapickerForField(dateFormField);
+            }
+
+            let periodFormField = result.getElementById("add_order_service_to_order_form_period");
+
+            if(periodFormField && periodFormField.type !== "hidden")
+            {
+                /** Заменяем блок с полем формы */
+                animateReplace(document.getElementById("field_period"), result.getElementById("field_period"));
+
+                const period = document.getElementById("add_order_service_to_order_form_period");
+
+                period.addEventListener("change", function(event)
+                {
+                    let form = this.closest("form");
+                    changeOrderService(form);
+                });
+            }
+
+            const service_buttons = document.getElementById("service_buttons");
+            const addButton = result.getElementById("add_order_service_to_order_form_order_service_add");
+
+            if(
+                addButton &&
+                !document.getElementById("add_order_service_to_order_form_order_service_add")
+                && false === periodFormField.classList.contains("is-invalid")
+            )
+            {
+                service_buttons.append(addButton);
+
+                addButton.addEventListener("click", function(event)
+                {
+                    let form = this.closest("form");
+
+                    submitOrderService(form);
+                });
+            }
+
+        }
+    });
 }
 
 //-------------------------------------
@@ -207,215 +203,211 @@ async function submitOrderService(form)
     const data = new FormData(form);
 
     await fetch(form.action, {
-        method: form.method,
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: data,
-    })
+        method : form.method,
+        cache : "no-cache",
+        credentials : "same-origin",
+        headers : {"X-Requested-With" : "XMLHttpRequest"},
+        redirect : "follow",
+        referrerPolicy : "no-referrer",
+        body : data,
+    }).then((response) =>
+    {
 
-        .then((response) =>
+        if(response.status !== 200)
         {
+            return false;
+        }
 
-            if(response.status !== 200)
+        const contentType = response.headers.get("content-type");
+
+        if(contentType !== "application/json")
+        {
+            return false;
+        }
+
+        return response.json();
+    }).then((result) =>
+    {
+        if(result.valid === true)
+        {
+            /** элементы для управлением коллекцией */
+            const collectionControls = document.getElementById("service_collcetion_controls");
+
+            /** название формы, куда будет добавляться элемент коллекции */
+            const formNameToAdd = collectionControls.querySelector("a").dataset.form;
+
+            /**
+             * блок с элементами коллекции
+             * */
+            const serviceCollection = document.getElementById("service_сollection_edit_order");
+
+            /**
+             * кнопка добавления элемента коллекции
+             * */
+            const addCollectionButton = document.getElementById(`add_item_` + formNameToAdd);
+
+            if(addCollectionButton)
             {
-                return false;
+                /** @type {number} */
+                IndexEditOrderService = addCollectionButton.dataset.index;
             }
 
-            const contentType = response.headers.get("content-type");
-
-            if(contentType !== 'application/json')
+            /** проверка на наличие ранее удаленных элементов */
+            if(DeletedIEditOrderService.size > 0)
             {
-                return false;
-            }
 
-            return response.json();
-        })
+                let last = "";
 
-        .then((result) =>
-        {
-            if(result.valid === true)
-            {
-                /** элементы для управлением коллекцией */
-                const collectionControls = document.getElementById('service_collcetion_controls');
-
-                /** название формы, куда будет добавляться элемент коллекции */
-                const formNameToAdd = collectionControls.querySelector('a').dataset.form;
-
-                /**
-                 * блок с элементами коллекции
-                 * */
-                const serviceCollection = document.getElementById('service_сollection_edit_order');
-
-                /**
-                 * кнопка добавления элемента коллекции
-                 * */
-                const addCollectionButton = document.getElementById(`add_item_` + formNameToAdd);
-
-                if(addCollectionButton)
+                /** получаем последний индекс удаленного элемента */
+                DeletedIEditOrderService.forEach(function(value)
                 {
-                    /** @type {number} */
-                    IndexEditOrderService = addCollectionButton.dataset.index;
-                }
-
-                /** проверка на наличие ранее удаленных элементов */
-                if(DeletedIEditOrderService.size > 0)
-                {
-
-                    let last = '';
-
-                    /** получаем последний индекс удаленного элемента */
-                    DeletedIEditOrderService.forEach(function(value)
-                    {
-                        last = value;
-                    });
-
-                    /**
-                     * @type {number}
-                     * меняем глобальный индекс текущего элемента коллекции на индекс удаленного элемента */
-                    AvitoKitCollectionItemKey = last
-
-                    /** удаляем элемент из хранилища удаленных элементов */
-                    DeletedIEditOrderService.delete('key' + last)
-                }
-
-                /**
-                 * @type {string}
-                 * id прототипа из кнопки добавления элемента в коллекцию
-                 * */
-                const prototypeName = addCollectionButton.dataset.prototype;
-
-                /**
-                 * @type {HTMLDivElement}
-                 * элемент с прототипом
-                 * */
-                const prototypeElement = document.getElementById(prototypeName);
-
-                /**
-                 * @type {string}
-                 *  контент прототипа
-                 * */
-                let prototypeContent = prototypeElement.dataset.prototype;
-
+                    last = value;
+                });
 
                 /**
                  * @type {number}
-                 * увеличиваем индекс элемента коллекции
-                 * */
-                let index = parseInt(addCollectionButton.dataset.index) + 1;
+                 * меняем глобальный индекс текущего элемента коллекции на индекс удаленного элемента */
+                AvitoKitCollectionItemKey = last;
 
-                /** добавляем текущее значение к кнопке для отслеживания увеличения элементов коллекции */
-                addCollectionButton.setAttribute('data-index', index)
-
-                /** ограничение максимального количество элементов коллекции */
-                if(parseInt(addCollectionButton.dataset.index) > LimitIEditOrderService)
-                {
-                    addCollectionButton.setAttribute('data-index', LimitIEditOrderService)
-                    return;
-                }
-
-                /** Добавление индекса для элементов коллекции по заполнителю из формы prototype_name => '__service__' */
-                prototypeContent = prototypeContent.replace(/__service__/g, IndexEditOrderService);
-
-                /** @type {Document} */
-                const result = parseFormData(prototypeContent);
-
-                /**
-                 * @type {HTMLDivElement}
-                 * элемент с прототипом и индексами для элемента коллекции по заполнителю из формы prototype_name => '__service__'
-                 * */
-                const prototypItem = result.getElementById('prototypeItem').querySelector('.item-service');
-
-                let prototypId = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_serv`)
-                let prototypName = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_name`)
-                let prototypDate = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_date`)
-                let prototypPeriod = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_period`)
-                let prototypPrice = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_money`)
-
-                /** Данные формы */
-                const formData = Object.fromEntries(data.entries());
-
-                const formId = formData["add_order_service_to_order_form[serv]"]
-                const formName = formData["add_order_service_to_order_form[name]"]
-                const formDate = formData["add_order_service_to_order_form[date]"]
-                const formPeriodUid = formData["add_order_service_to_order_form[period]"] // uuid
-                const formPrice = formData["add_order_service_to_order_form[price]"]
-
-                const formPeriodEl = form.elements['add_order_service_to_order_form[period]']
-                const selectedPeriod = formPeriodEl.options[formPeriodEl.selectedIndex];
-                const formPeriodTime = selectedPeriod.dataset.time // text
-
-                /**
-                 * Price
-                 */
-                prototypPrice.setAttribute('data-min', formPrice)
-
-                /**
-                 * Name
-                 */
-                let idPrototypeParentEl = prototypId.closest('td')
-                idPrototypeParentEl.append(formName);
-
-                /**
-                 * Period
-                 */
-                let periodPrototypeParentEl = prototypPeriod.closest('td')
-                periodPrototypeParentEl.append(formPeriodTime);
-
-                /**
-                 * Date
-                 */
-                let datePrototypeParentEl = prototypDate.closest('td')
-                datePrototypeParentEl.append(formDate);
-
-                prototypId.value = formId
-                prototypName.value = formName
-                prototypDate.value = formDate
-                prototypPrice.value = formPrice
-                prototypPeriod.value = formPeriodUid // uuid
-                prototypPeriod.textContent = formPeriodTime // text
-
-                if(false === isOrderServiceUnique(formId, formDate, formPeriodUid))
-                {
-                    /** Закрываем модальное окно */
-                    let Modal = document.getElementById("modal");
-                    let modalInstance = bootstrap.Modal.getInstance(Modal);
-                    modalInstance.hide();
-
-                    let noticeToast =
-                        '{ "type":"danger" , ' +
-                        '"header":"Ошибка при добавлении услуги в заказ"  , ' +
-                        `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriodTime + ` уже добавлена" }`;
-
-                    createToast(JSON.parse(noticeToast));
-                    return;
-                }
-
-                /** вставляем элемент в коллекцию */
-                serviceCollection.append(prototypItem);
-
-                if(document.body.contains(prototypItem))
-                {
-
-                    /** Закрываем модальное окно */
-                    let Modal = document.getElementById("modal");
-                    let modalInstance = bootstrap.Modal.getInstance(Modal);
-                    modalInstance.hide();
-
-                    changeOrderServiceSumByInput(prototypItem)
-                    changeOrderServiceSumByClick(prototypItem)
-
-                    deleteOrderServiceItem(prototypItem)
-
-                    let result = parseFloat(formPrice.replace(",", "."));
-
-                    modifyTotalOrderSum()
-                }
+                /** удаляем элемент из хранилища удаленных элементов */
+                DeletedIEditOrderService.delete("key" + last);
             }
 
-        })
+            /**
+             * @type {string}
+             * id прототипа из кнопки добавления элемента в коллекцию
+             * */
+            const prototypeName = addCollectionButton.dataset.prototype;
+
+            /**
+             * @type {HTMLDivElement}
+             * элемент с прототипом
+             * */
+            const prototypeElement = document.getElementById(prototypeName);
+
+            /**
+             * @type {string}
+             *  контент прототипа
+             * */
+            let prototypeContent = prototypeElement.dataset.prototype;
+
+
+            /**
+             * @type {number}
+             * увеличиваем индекс элемента коллекции
+             * */
+            let index = parseInt(addCollectionButton.dataset.index) + 1;
+
+            /** добавляем текущее значение к кнопке для отслеживания увеличения элементов коллекции */
+            addCollectionButton.setAttribute("data-index", index);
+
+            /** ограничение максимального количество элементов коллекции */
+            if(parseInt(addCollectionButton.dataset.index) > LimitIEditOrderService)
+            {
+                addCollectionButton.setAttribute("data-index", LimitIEditOrderService);
+                return;
+            }
+
+            /** Добавление индекса для элементов коллекции по заполнителю из формы prototype_name => '__service__' */
+            prototypeContent = prototypeContent.replace(/__service__/g, IndexEditOrderService);
+
+            /** @type {Document} */
+            const result = parseFormData(prototypeContent);
+
+            /**
+             * @type {HTMLDivElement}
+             * элемент с прототипом и индексами для элемента коллекции по заполнителю из формы prototype_name => '__service__'
+             * */
+            const prototypItem = result.getElementById("prototypeItem").querySelector(".item-service");
+
+            let prototypId = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_serv`);
+            let prototypName = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_name`);
+            let prototypDate = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_date`);
+            let prototypPeriod = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_period`);
+            let prototypPrice = prototypItem.querySelector(`.` + formNameToAdd + `_` + `${IndexEditOrderService}` + `_money`);
+
+            /** Данные формы */
+            const formData = Object.fromEntries(data.entries());
+
+            const formId = formData["add_order_service_to_order_form[serv]"];
+            const formName = formData["add_order_service_to_order_form[name]"];
+            const formDate = formData["add_order_service_to_order_form[date]"];
+            const formPeriodUid = formData["add_order_service_to_order_form[period]"]; // uuid
+            const formPrice = formData["add_order_service_to_order_form[price]"];
+
+            const formPeriodEl = form.elements["add_order_service_to_order_form[period]"];
+            const selectedPeriod = formPeriodEl.options[formPeriodEl.selectedIndex];
+            const formPeriodTime = selectedPeriod.dataset.time; // text
+
+            /**
+             * Price
+             */
+            prototypPrice.setAttribute("data-min", formPrice);
+
+            /**
+             * Name
+             */
+            let idPrototypeParentEl = prototypId.closest("td");
+            idPrototypeParentEl.append(formName);
+
+            /**
+             * Period
+             */
+            let periodPrototypeParentEl = prototypPeriod.closest("td");
+            periodPrototypeParentEl.append(formPeriodTime);
+
+            /**
+             * Date
+             */
+            let datePrototypeParentEl = prototypDate.closest("td");
+            datePrototypeParentEl.append(formDate);
+
+            prototypId.value = formId;
+            prototypName.value = formName;
+            prototypDate.value = formDate;
+            prototypPrice.value = formPrice;
+            prototypPeriod.value = formPeriodUid; // uuid
+            prototypPeriod.textContent = formPeriodTime; // text
+
+            if(false === isOrderServiceUnique(formId, formDate, formPeriodUid))
+            {
+                /** Закрываем модальное окно */
+                let Modal = document.getElementById("modal");
+                let modalInstance = bootstrap.Modal.getInstance(Modal);
+                modalInstance.hide();
+
+                let noticeToast =
+                    "{ \"type\":\"danger\" , " +
+                    "\"header\":\"Ошибка при добавлении услуги в заказ\"  , " +
+                    `"message" : "Услуга с названием ` + formName + `, датой ` + formDate + `, периодом ` + formPeriodTime + ` уже добавлена" }`;
+
+                createToast(JSON.parse(noticeToast));
+                return;
+            }
+
+            /** вставляем элемент в коллекцию */
+            serviceCollection.append(prototypItem);
+
+            if(document.body.contains(prototypItem))
+            {
+
+                /** Закрываем модальное окно */
+                let Modal = document.getElementById("modal");
+                let modalInstance = bootstrap.Modal.getInstance(Modal);
+                modalInstance.hide();
+
+                changeOrderServiceSumByInput(prototypItem);
+                changeOrderServiceSumByClick(prototypItem);
+
+                deleteOrderServiceItem(prototypItem);
+
+                let result = parseFloat(formPrice.replace(",", "."));
+
+                modifyTotalOrderSum();
+            }
+        }
+
+    });
 }
 
 //-------------------------------------
@@ -427,12 +419,12 @@ function isOrderServiceUnique(servValue, dateValue, periodValue)
     for(const row of rows)
     {
 
-        const servInput = row.querySelector('input[name*="[serv]"]');
-        const dateInput = row.querySelector('input[name*="[date]"]');
-        let periodEl = row.querySelector('select[name*="[period]"]');
+        const servInput = row.querySelector("input[name*=\"[serv]\"]");
+        const dateInput = row.querySelector("input[name*=\"[date]\"]");
+        let periodEl = row.querySelector("select[name*=\"[period]\"]");
         if(!periodEl)
         {
-            periodEl = row.querySelector('input[name*="[period]"]');
+            periodEl = row.querySelector("input[name*=\"[period]\"]");
         }
 
         if(!servInput || !dateInput || !periodEl)
@@ -460,17 +452,17 @@ function isOrderServiceUnique(servValue, dateValue, periodValue)
 /** Изменяем стоимость по вводу */
 function changeOrderServiceSumByInput(element)
 {
-    element.querySelectorAll('.order-service-price').forEach(function(input)
+    element.querySelectorAll(".order-service-price").forEach(function(input)
     {
         let timer;
 
-        input.addEventListener('input', function(event)
+        input.addEventListener("input", function(event)
         {
             clearTimeout(timer);
 
             timer = setTimeout(() =>
             {
-                modifyTotalOrderSum()
+                modifyTotalOrderSum();
 
             }, 1000);
 
@@ -481,9 +473,9 @@ function changeOrderServiceSumByInput(element)
 /** Изменяем стоимость по клику */
 function changeOrderServiceSumByClick(element)
 {
-    element.querySelectorAll('.order-service-price-minus').forEach(function(btn)
+    element.querySelectorAll(".order-service-price-minus").forEach(function(btn)
     {
-        btn.addEventListener('click', function()
+        btn.addEventListener("click", function()
         {
             let priceInput = document.getElementById(this.dataset.id);
 
@@ -508,17 +500,17 @@ function changeOrderServiceSumByClick(element)
 
             priceInput.value = result;
 
-            modifyTotalOrderSum()
+            modifyTotalOrderSum();
 
 
         });
 
     });
 
-    element.querySelectorAll('.order-service-price-plus').forEach(function(btn)
+    element.querySelectorAll(".order-service-price-plus").forEach(function(btn)
     {
 
-        btn.addEventListener('click', function()
+        btn.addEventListener("click", function()
         {
             let priceInput = document.getElementById(this.dataset.id);
 
@@ -532,7 +524,7 @@ function changeOrderServiceSumByClick(element)
 
             priceInput.value = result;
 
-            modifyTotalOrderSum()
+            modifyTotalOrderSum();
 
         });
 
@@ -542,63 +534,63 @@ function changeOrderServiceSumByClick(element)
 /** Модифицируем стоимость за услуги и общую стоимость */
 function modifyTotalOrderSum()
 {
-    let serviceCollection = document.getElementById('service_сollection_edit_order');
-    let serviceSumEl = document.getElementById('service_sum');
-    let serviceSumResult = 0
+    let serviceCollection = document.getElementById("service_сollection_edit_order");
+    let serviceSumEl = document.getElementById("service_sum");
+    let serviceSumResult = 0;
 
-    serviceCollection.querySelectorAll('.order-service-price').forEach(function(input)
+    serviceCollection.querySelectorAll(".order-service-price").forEach(function(input)
     {
-        let inputPriceInt = parseInt(input.value, 10)
-        const priceMin = parseInt(input.dataset.min, 10)
+        let inputPriceInt = parseInt(input.value, 10);
+        const priceMin = parseInt(input.dataset.min, 10);
 
         if(inputPriceInt < priceMin || Number.isNaN(inputPriceInt))
         {
             let noticeToast =
-                '{ "type":"danger" , ' +
-                '"header":"Ошибка при изменении стоимости"  , ' +
+                "{ \"type\":\"danger\" , " +
+                "\"header\":\"Ошибка при изменении стоимости\"  , " +
                 `"message" : "Минимальная стоимость услуги ` + `${priceMin}` + ` ₽" }`;
 
             createToast(JSON.parse(noticeToast));
 
-            input.value = priceMin
-            inputPriceInt = priceMin
+            input.value = priceMin;
+            inputPriceInt = priceMin;
         }
 
-        serviceSumResult += inputPriceInt
+        serviceSumResult += inputPriceInt;
     });
 
     /** Изменение общей стоимости за услуги */
     let serviceSumFormatted = serviceSumResult.toLocaleString("ru-RU") + " ₽";
-    serviceSumEl.textContent = serviceSumFormatted
+    serviceSumEl.textContent = serviceSumFormatted;
 
     /** Стоимость Итого */
-    let totalAllSumEl = document.getElementById('total_all_sum');
+    let totalAllSumEl = document.getElementById("total_all_sum");
 
     /** С учетом стоимости продуктов */
-    let productSum = document.getElementById('total_product_sum');
+    let productSum = document.getElementById("total_product_sum");
     let productSumParse = productSum.textContent.replace(/[^\d]/g, "");
     let productSumInt = parseInt(productSumParse, 10);
 
     let serviceSumParse = serviceSumEl.textContent.replace(/[^\d]/g, "");
     let serviceSumInt = parseInt(serviceSumParse, 10);
 
-    const totalAllSumRes = productSumInt + serviceSumInt
+    const totalAllSumRes = productSumInt + serviceSumInt;
 
     const totalSumFormatted = totalAllSumRes.toLocaleString("ru-RU") + " ₽";
-    totalAllSumEl.textContent = totalSumFormatted
+    totalAllSumEl.textContent = totalSumFormatted;
 }
 
 /** Кнопки удаления элемента коллекции */
 function deleteOrderServiceItem(element)
 {
-    element.querySelectorAll('.del-item-service').forEach(function(btn)
+    element.querySelectorAll(".del-item-service").forEach(function(btn)
     {
-        btn.addEventListener('click', function()
+        btn.addEventListener("click", function()
         {
             /**
              * @type {string}
              * */
-            let deteteItemId = btn.id.replace(/delete-/g, '');
+            let deteteItemId = btn.id.replace(/delete-/g, "");
 
             /**
              * @type {HTMLDivElement}
@@ -610,25 +602,25 @@ function deleteOrderServiceItem(element)
              * @type {string}
              * индекс для удаления
              * */
-            const deleteIndex = btn.id.replace(/delete-order_form_service-/g, '');
+            const deleteIndex = btn.id.replace(/delete-order_form_service-/g, "");
             // const deleteIndex = parseInt(btn.id.match(/\d+/));
 
             /** добавляем индекс удаленного элемента для отслеживания */
-            DeletedIEditOrderService.set('key' + deleteIndex, deleteIndex)
+            DeletedIEditOrderService.set("key" + deleteIndex, deleteIndex);
 
             /** если элемент удалился - получаем текущий индекс коллекции и уменьшаем его в кнопке добавления элементов */
             if(itemForDelete)
             {
 
-                let addBtn = document.getElementById('add_item_edit_order_form_serv');
+                let addBtn = document.getElementById("add_item_edit_order_form_serv");
                 const newIndex = parseInt(addBtn.dataset.index) - 1;
 
-                addBtn.setAttribute('data-index', newIndex)
+                addBtn.setAttribute("data-index", newIndex);
 
                 /** Удаляем элемент */
-                itemForDelete.remove()
+                itemForDelete.remove();
 
-                modifyTotalOrderSum()
+                modifyTotalOrderSum();
 
             }
         });
@@ -639,19 +631,19 @@ function deleteOrderServiceItem(element)
 function initDatapickerForField(field)
 {
     const datepicker = MCDatepicker.create({
-        el: '#' + field.id,
-        bodyType: 'modal', // ‘modal’, ‘inline’, or ‘permanent’.
-        autoClose: false,
-        closeOndblclick: true,
-        closeOnBlur: false,
-        customOkBTN: 'OK',
-        customClearBTN: datapickerLang[$locale].customClearBTN,
-        customCancelBTN: datapickerLang[$locale].customCancelBTN,
-        firstWeekday: datapickerLang[$locale].firstWeekday,
-        dateFormat: 'DD.MM.YYYY',
-        customWeekDays: datapickerLang[$locale].customWeekDays,
-        customMonths: datapickerLang[$locale].customMonths,
-        minDate: new Date(),
+        el : "#" + field.id,
+        bodyType : "modal", // ‘modal’, ‘inline’, or ‘permanent’.
+        autoClose : false,
+        closeOndblclick : true,
+        closeOnBlur : false,
+        customOkBTN : "OK",
+        customClearBTN : datapickerLang[$locale].customClearBTN,
+        customCancelBTN : datapickerLang[$locale].customCancelBTN,
+        firstWeekday : datapickerLang[$locale].firstWeekday,
+        dateFormat : "DD.MM.YYYY",
+        customWeekDays : datapickerLang[$locale].customWeekDays,
+        customMonths : datapickerLang[$locale].customMonths,
+        minDate : new Date(),
     });
 
     const addOrderServiceForm = document.forms.add_order_service_to_order_form;
@@ -669,7 +661,7 @@ function initDatapickerAll()
 
     for(const row of rows)
     {
-        const dateInput = row.querySelector('input[name*="[date]"]');
+        const dateInput = row.querySelector("input[name*=\"[date]\"]");
 
         if(!dateInput)
         {
@@ -683,9 +675,9 @@ function initDatapickerAll()
             if(x9y7P90sZs >= 1000)
             { return; }
 
-            if(typeof MCDatepicker === 'object')
+            if(typeof MCDatepicker === "object")
             {
-                const [day, month, year] = dateInput.value.split('.');
+                const [day, month, year] = dateInput.value.split(".");
                 $selectedDate = new Date(+year, month - 1, +day);
 
                 let currentDate = new Date();
@@ -695,28 +687,28 @@ function initDatapickerAll()
                 const limitDay = new Date(currentDate.setDate(currentDate.getDate() + 7));
 
                 const datepicker = MCDatepicker.create({
-                    el: '#' + dateInput.id,
-                    bodyType: 'modal',
-                    autoClose: false,
-                    closeOndblclick: true,
-                    closeOnBlur: false,
-                    customOkBTN: 'OK',
-                    customClearBTN: datapickerLang[$locale].customClearBTN,
-                    customCancelBTN: datapickerLang[$locale].customCancelBTN,
-                    firstWeekday: datapickerLang[$locale].firstWeekday,
-                    dateFormat: 'DD.MM.YYYY',
-                    customWeekDays: datapickerLang[$locale].customWeekDays,
-                    customMonths: datapickerLang[$locale].customMonths,
-                    selectedDate: $selectedDate,
-                    minDate: nextDay,
-                    maxDate: limitDay,
+                    el : "#" + dateInput.id,
+                    bodyType : "modal",
+                    autoClose : false,
+                    closeOndblclick : true,
+                    closeOnBlur : false,
+                    customOkBTN : "OK",
+                    customClearBTN : datapickerLang[$locale].customClearBTN,
+                    customCancelBTN : datapickerLang[$locale].customCancelBTN,
+                    firstWeekday : datapickerLang[$locale].firstWeekday,
+                    dateFormat : "DD.MM.YYYY",
+                    customWeekDays : datapickerLang[$locale].customWeekDays,
+                    customMonths : datapickerLang[$locale].customMonths,
+                    selectedDate : $selectedDate,
+                    minDate : nextDay,
+                    maxDate : limitDay,
                 });
 
                 const editOrderForm = document.forms.edit_order_form;
 
                 datepicker.onSelect(function(date, formatedDate)
                 {
-                    let dateFieldId = dateInput.id
+                    let dateFieldId = dateInput.id;
 
                     updateServicePeriodField(editOrderForm, dateFieldId);
                 });
@@ -738,55 +730,51 @@ async function updateServicePeriodField(form, fieldId)
     const data = new FormData(form);
 
     /** Удаляем токен из формы */
-    data.delete(form.name + '[_token]');
+    data.delete(form.name + "[_token]");
 
     await fetch(form.action, {
-        method: form.method,
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: data,
-    })
-
-        .then((response) =>
+        method : form.method,
+        cache : "no-cache",
+        credentials : "same-origin",
+        headers : {"X-Requested-With" : "XMLHttpRequest"},
+        redirect : "follow",
+        referrerPolicy : "no-referrer",
+        body : data,
+    }).then((response) =>
+    {
+        if(response.status !== 200)
         {
-            if(response.status !== 200)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            return response.text();
+        return response.text();
 
-        })
+    }).then((data) =>
+    {
+        const periodFieldId = fieldId.replace("date", "period");
 
-        .then((data) =>
+        /** @type {Document} */
+        const result = parseFormData(data);
+
+        let collection = result.getElementById("service_сollection_edit_order");
+
+        let resultPeriod = result.getElementById(periodFieldId);
+
+        let currentPeriod = document.getElementById(periodFieldId);
+
+        if(currentPeriod && resultPeriod)
         {
-            const periodFieldId = fieldId.replace("date", "period")
+            animateReplace(currentPeriod, resultPeriod);
+        }
 
-            /** @type {Document} */
-            const result = parseFormData(data);
-
-            let collection = result.getElementById('service_сollection_edit_order')
-
-            let resultPeriod = result.getElementById(periodFieldId)
-
-            let currentPeriod = document.getElementById(periodFieldId)
-
-            if(currentPeriod && resultPeriod)
-            {
-                animateReplace(currentPeriod, resultPeriod)
-            }
-
-        })
+    });
 }
 
 /** Парсинг данных формы из ответа сервера */
 function parseFormData(data)
 {
     const parser = new DOMParser();
-    return parser.parseFromString(data, 'text/html');
+    return parser.parseFromString(data, "text/html");
 }
 
 /** Плавная замена поля формы */
@@ -794,7 +782,7 @@ function animateReplace(oldField, newField)
 {
     newField.classList.add("fade");
 
-    oldField.replaceWith(newField)
+    oldField.replaceWith(newField);
 
     void newField.offsetWidth;
     newField.classList.add("show");

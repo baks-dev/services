@@ -77,7 +77,7 @@ class AllServicesRepository implements AllServicesInterface
                 'invariable',
                 '
                         invariable.main = service.id
-                        AND invariable.profile = :profile'
+                        AND invariable.profile = :profile',
             )
             ->setParameter(
                 key: 'profile',
@@ -92,7 +92,7 @@ class AllServicesRepository implements AllServicesInterface
                 'service',
                 ServiceInfo::class,
                 'info',
-                'info.event = service.event'
+                'info.event = service.event',
             );
 
         $dbal
@@ -102,7 +102,7 @@ class AllServicesRepository implements AllServicesInterface
                 'service',
                 ServicePrice::class,
                 'price',
-                'price.event = service.event'
+                'price.event = service.event',
             );
 
         if($this->search && $this->search->getQuery())

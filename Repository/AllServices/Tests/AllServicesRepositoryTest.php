@@ -27,6 +27,8 @@ use BaksDev\Services\Repository\AllServices\AllServicesInterface;
 use BaksDev\Services\Repository\AllServices\AllServicesResult;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
@@ -55,8 +57,8 @@ class AllServicesRepositoryTest extends KernelTestCase
         $AllServicesResult = current($data);
 
         // Вызываем все геттеры
-        $reflectionClass = new \ReflectionClass(AllServicesResult::class);
-        $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $reflectionClass = new ReflectionClass(AllServicesResult::class);
+        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
         foreach($methods as $method)
         {

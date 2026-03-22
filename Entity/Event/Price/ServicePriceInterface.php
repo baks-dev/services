@@ -23,9 +23,6 @@
 
 namespace BaksDev\Services\Entity\Event\Price;
 
-use BaksDev\Services\Entity\Event\ServiceEvent;
-use BaksDev\Services\Type\Event\ServiceEventUid;
-
 interface ServicePriceInterface
 {
 }

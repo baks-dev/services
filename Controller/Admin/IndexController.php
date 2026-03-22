@@ -60,7 +60,7 @@ final class IndexController extends AbstractController
             [
                 'query' => $query,
                 'search' => $searchForm->createView(),
-            ]
+            ],
         );
     }
 }

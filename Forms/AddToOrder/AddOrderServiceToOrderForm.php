@@ -103,14 +103,14 @@ final class AddOrderServiceToOrderForm extends AbstractType
 
                     $form->add('price', MoneyType::class, [
                             'attr' => [
-                                'data-min' => $price->getValue()
+                                'data-min' => $price->getValue(),
                             ],
                             'empty_data' => (string) $price->getValue(),
                             'currency' => $service->getCurrency(),
                             'label' => 'Цена',
                             'scale' => 0,
                             'required' => true,
-                        ]
+                        ],
                     );
 
                     /** Date */
@@ -138,7 +138,7 @@ final class AddOrderServiceToOrderForm extends AbstractType
 
                             $data = [
                                 'time' => $period->getFrom()->format('H:i').' - '.$period->getTo()->format('H:i'),
-                                'active' => $period->isOrderServiceActive()
+                                'active' => $period->isOrderServiceActive(),
                             ];
 
                             return new ServicePeriodUid($period->getPeriodId(), $data);
@@ -167,12 +167,12 @@ final class AddOrderServiceToOrderForm extends AbstractType
                         $form->add(
                             'order_service_add',
                             ButtonType::class,
-                            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+                            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
                         );
                     }
 
                 }
-            }
+            },
         );
 
     }

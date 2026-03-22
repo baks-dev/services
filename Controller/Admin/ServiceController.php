@@ -82,7 +82,7 @@ final class ServiceController extends AbstractController
                 'periods' => $periods,
                 'dates' => $dates(),
                 'name' => $serviceData->getName(),
-            ]
+            ],
         );
     }
 

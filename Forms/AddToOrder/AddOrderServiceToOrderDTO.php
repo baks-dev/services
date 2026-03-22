@@ -39,28 +39,26 @@ final class AddOrderServiceToOrderDTO
     #[Assert\NotBlank]
     #[Assert\Uuid]
     public ?ServiceUid $serv = null;
-
-    #[Assert\NotBlank]
-    private ?Money $price = null;
-
-    #[Assert\NotBlank]
-    private DateTimeImmutable|string|null $date = null;
-
-    #[Assert\NotBlank]
-    private ServicePeriodUid|string|null $period = null;
-
     #[Assert\Valid]
     public OrderServicePriceDTO $priceDTO;
-
     public ?string $name = null;
-
     public ?string $time = null;
-
     public array|false $allServices = false;
+    #[Assert\NotBlank]
+    private ?Money $price = null;
+    #[Assert\NotBlank]
+    private DateTimeImmutable|string|null $date = null;
+    #[Assert\NotBlank]
+    private ServicePeriodUid|string|null $period = null;
 
     public function __construct()
     {
         $this->priceDTO = new OrderServicePriceDTO();
+    }
+
+    public function getServ(): ?ServiceUid
+    {
+        return $this->serv;
     }
 
     public function setServ(ServiceUid|string|null $serv): self
@@ -69,9 +67,9 @@ final class AddOrderServiceToOrderDTO
         return $this;
     }
 
-    public function getServ(): ?ServiceUid
+    public function getPrice(): ?Money
     {
-        return $this->serv;
+        return $this->price;
     }
 
     public function setPrice(Money|float|null $price): self
@@ -81,20 +79,15 @@ final class AddOrderServiceToOrderDTO
         return $this;
     }
 
-    public function getPrice(): ?Money
+    public function getPeriod(): ?ServicePeriodUid
     {
-        return $this->price;
+        return $this->period;
     }
 
     public function setPeriod(ServicePeriodUid|string|null $period): self
     {
         $this->period = $period;
         return $this;
-    }
-
-    public function getPeriod(): ?ServicePeriodUid
-    {
-        return $this->period;
     }
 
     public function getDate(): ?DateTimeImmutable

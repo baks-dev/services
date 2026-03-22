@@ -65,7 +65,7 @@ final class NewController extends AbstractController
             ->createForm(
                 type: ServiceForm::class,
                 data: $ServiceDTO,
-                options: ['action' => $this->generateUrl('services:admin.newedit.new'),]
+                options: ['action' => $this->generateUrl('services:admin.newedit.new'),],
             )
             ->handleRequest($request);
 
@@ -82,7 +82,7 @@ final class NewController extends AbstractController
                 'page.new',
                 $handle instanceof Service ? 'success.new' : 'danger.new',
                 'service.admin',
-                $handle
+                $handle,
             );
 
             return $handle instanceof Service ? $this->redirectToRoute('services:admin.index') : $this->redirectToReferer();

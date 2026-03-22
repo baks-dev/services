@@ -33,7 +33,7 @@ final class AddToNewOrderController extends AbstractController
             ->createForm(
                 type: AddOrderServiceToOrderForm::class,
                 data: $AddOrderServiceToOrderDTO,
-                options: ['action' => $this->generateUrl('services:admin.order.service.new')]
+                options: ['action' => $this->generateUrl('services:admin.order.service.new')],
             );
 
         $addForm->handleRequest($request);

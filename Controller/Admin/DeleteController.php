@@ -67,7 +67,7 @@ class DeleteController extends AbstractController
                 'page.delete',
                 $handle instanceof Service ? 'success.delete' : 'danger.delete',
                 'service.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToRoute('services:admin.index');
@@ -77,7 +77,7 @@ class DeleteController extends AbstractController
             [
                 'form' => $form->createView(),
                 'name' => $ServiceEvent->getInfo()->getName(),
-            ]
+            ],
         );
     }
 }

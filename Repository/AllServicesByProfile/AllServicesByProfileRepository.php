@@ -75,13 +75,13 @@ final class AllServicesByProfileRepository implements AllServicesByProfileInterf
                 '
                         service_invariable.main = service.id
                         AND
-                        service_invariable.profile = :profile'
+                        service_invariable.profile = :profile',
             )
             ->setParameter(
                 key: 'profile',
                 value: ($this->profile instanceof UserProfileUid) ? $this->profile : $this->UserProfileTokenStorage->getProfile(),
                 type: UserProfileUid::TYPE,
-            );;
+            );
 
         $dbal
             ->addSelect('service_info.name AS params')
@@ -89,7 +89,7 @@ final class AllServicesByProfileRepository implements AllServicesByProfileInterf
                 'service_invariable',
                 ServiceInfo::class,
                 'service_info',
-                'service_info.event = service_invariable.event'
+                'service_info.event = service_invariable.event',
             );
 
         $result = $dbal->fetchAllHydrate(ServiceUid::class);

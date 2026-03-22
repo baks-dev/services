@@ -23,11 +23,11 @@
 
 namespace BaksDev\Services\Repository\ServicePeriods;
 
+use BaksDev\Orders\Order\Type\OrderService\Period\ServicePeriodUid;
 use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Reference\Currency\Type\Currency;
 use BaksDev\Reference\Money\Type\Money;
 use BaksDev\Services\Type\Event\ServiceEventUid;
-use BaksDev\Orders\Order\Type\OrderService\Period\ServicePeriodUid;
 use DateTimeImmutable;
 
 final class ServicePeriodResult

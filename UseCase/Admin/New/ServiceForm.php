@@ -52,7 +52,7 @@ final class ServiceForm extends AbstractType
             'allow_add' => true,
             'label' => false,
             'prototype_name' => '__periods__',
-            'required' => true
+            'required' => true,
         ]);
 
 
@@ -60,7 +60,7 @@ final class ServiceForm extends AbstractType
         $builder->add(
             'service',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
         );
     }
 

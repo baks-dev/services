@@ -42,7 +42,7 @@ final class ServicePriceForm extends AbstractType
         $builder->add(
             'price',
             MoneyType::class,
-            ['currency' => false, 'required' => true, 'label' => 'Цена']
+            ['currency' => false, 'required' => true, 'label' => 'Цена'],
         );
 
         $builder->get('price')->addModelTransformer(
@@ -53,8 +53,8 @@ final class ServicePriceForm extends AbstractType
                 function($price) {
 
                     return new Money($price);
-                }
-            )
+                },
+            ),
         );
 
         $builder->add(
@@ -70,7 +70,7 @@ final class ServicePriceForm extends AbstractType
                 },
                 'translation_domain' => 'reference.currency',
                 'label' => false,
-            ]
+            ],
         );
 
     }

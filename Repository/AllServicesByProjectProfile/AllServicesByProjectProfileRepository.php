@@ -68,7 +68,7 @@ final readonly class AllServicesByProjectProfileRepository implements AllService
                 '
                         service_invariable.main = service.id
                         AND
-                        service_invariable.profile = :'.$dbal::PROJECT_PROFILE_KEY
+                        service_invariable.profile = :'.$dbal::PROJECT_PROFILE_KEY,
             );
 
         $dbal
@@ -77,7 +77,7 @@ final readonly class AllServicesByProjectProfileRepository implements AllService
                 'service_invariable',
                 ServiceInfo::class,
                 'service_info',
-                'service_info.event = service_invariable.event'
+                'service_info.event = service_invariable.event',
             );
 
 

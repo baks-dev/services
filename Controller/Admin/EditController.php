@@ -59,8 +59,8 @@ class EditController extends AbstractController
                 data: $ServiceDTO,
                 options: ['action' => $this->generateUrl(
                     route: 'services:admin.newedit.edit',
-                    parameters: ['id' => $ServiceDTO->getEvent()]
-                ),]
+                    parameters: ['id' => $ServiceDTO->getEvent()],
+                ),],
             )
             ->handleRequest($request);
 
@@ -76,7 +76,7 @@ class EditController extends AbstractController
                 'page.edit',
                 $handle instanceof Service ? 'success.edit' : 'danger.edit',
                 'service.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToRoute('services:admin.index');

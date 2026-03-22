@@ -34,7 +34,7 @@ final class AddToEditOrderController extends AbstractController
             ->createForm(
                 type: AddOrderServiceToOrderForm::class,
                 data: $AddOrderServiceToOrderDTO,
-                options: ['action' => $this->generateUrl('services:admin.order.service.edit')]
+                options: ['action' => $this->generateUrl('services:admin.order.service.edit')],
             );
 
         $addForm->handleRequest($request);

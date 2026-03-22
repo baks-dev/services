@@ -34,6 +34,7 @@ use BaksDev\Services\UseCase\Admin\New\Price\ServicePriceDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceDTO;
 use BaksDev\Services\UseCase\Admin\New\ServiceHandler;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -77,10 +78,10 @@ class NewServiceHandlerTest extends KernelTestCase
         /**
          * Price
          */
-         $ServicePriceDTO = new ServicePriceDTO();
-         $ServicePriceDTO
-             ->setPrice(100.00)
-             ->setCurrency(RUR::CURRENCY);
+        $ServicePriceDTO = new ServicePriceDTO();
+        $ServicePriceDTO
+            ->setPrice(100.00)
+            ->setCurrency(RUR::CURRENCY);
 
         $ServiceDTO->setPrice($ServicePriceDTO);
 
@@ -98,8 +99,8 @@ class NewServiceHandlerTest extends KernelTestCase
          */
         $ServicePeriodDTO = new ServicePeriodDTO();
 
-        $ServicePeriodDTO->setFrm(new \DateTimeImmutable('now'));
-        $ServicePeriodDTO->setUpto(new \DateTimeImmutable('now'));
+        $ServicePeriodDTO->setFrm(new DateTimeImmutable('now'));
+        $ServicePeriodDTO->setUpto(new DateTimeImmutable('now'));
 
         $ServiceDTO->addPeriod($ServicePeriodDTO);
 

@@ -45,7 +45,7 @@ final class ServicePeriodForm extends AbstractType
                 'input' => 'datetime_immutable',
                 'label' => false,
                 'required' => true,
-            ]
+            ],
         );
 
         $now = new DateTimeImmutable('now');
@@ -58,8 +58,8 @@ final class ServicePeriodForm extends AbstractType
                 function(DateTimeImmutable $frm) use ($now) {
                     $getFrm = $frm->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
                     return $getFrm;
-                }
-            )
+                },
+            ),
         );
 
         $builder->add(
@@ -70,7 +70,7 @@ final class ServicePeriodForm extends AbstractType
                 'input' => 'datetime_immutable',
                 'label' => false,
                 'required' => true,
-            ]
+            ],
         );
 
         $builder->get('upto')->addModelTransformer(
@@ -81,8 +81,8 @@ final class ServicePeriodForm extends AbstractType
                 function(DateTimeImmutable $upto) use ($now) {
                     $getUpto = $upto->setDate((int) $now->format('Y'), (int) $now->format('m'), (int) $now->format('d'));
                     return $getUpto;
-                }
-            )
+                },
+            ),
         );
 
     }
