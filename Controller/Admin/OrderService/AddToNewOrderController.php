@@ -21,10 +21,10 @@ final class AddToNewOrderController extends AbstractController
     #[Route('/admin/order/service/add/new', name: 'admin.order.service.new', methods: ['GET', 'POST',])]
     public function edit(
         Request $request,
-        AllServicesByProfileInterface $allServicesByProfile,
+        AllServicesByProfileInterface $allServicesByProfileRepository,
     ): Response
     {
-        $allServicesByProfile = $allServicesByProfile->findAll();
+        $allServicesByProfile = $allServicesByProfileRepository->findAll();
 
         $AddOrderServiceToOrderDTO = new AddOrderServiceToOrderDTO();
         $AddOrderServiceToOrderDTO->setAllServices($allServicesByProfile);
