@@ -32,7 +32,9 @@ use BaksDev\Orders\Order\Repository\Services\OneServiceById\OneServiceByIdInterf
 use BaksDev\Orders\Order\Type\OrderService\Period\ServicePeriodUid;
 use BaksDev\Orders\Order\Type\OrderService\Service\ServiceUid;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use DateTimeImmutable;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -88,11 +90,13 @@ final class AddOrderServiceToOrderForm extends AbstractType
                 $data = $event->getData();
                 $form = $event->getForm();
 
+                $UserProfileUid = $this->UserProfileTokenStorage->getProfile();
+
                 /** Если выбран сервис, добавляем поля */
                 if(false === empty($data['serv']))
                 {
                     $service = $this->oneServiceRepository
-                        ->byProfile($this->UserProfileTokenStorage->getProfile())
+                        ->byProfile($UserProfileUid)
                         ->find(new ServiceUid($data['serv']));
 
                     /** Name */
@@ -102,15 +106,15 @@ final class AddOrderServiceToOrderForm extends AbstractType
                     $price = $service->getPrice();
 
                     $form->add('price', MoneyType::class, [
-                            'attr' => [
-                                'data-min' => $price->getValue(),
-                            ],
-                            'empty_data' => (string) $price->getValue(),
-                            'currency' => $service->getCurrency(),
-                            'label' => 'Цена',
-                            'scale' => 0,
-                            'required' => true,
+                        'attr' => [
+                            'data-min' => $price->getValue(),
                         ],
+                        'empty_data' => (string) $price->getValue(),
+                        'currency' => $service->getCurrency(),
+                        'label' => 'Цена',
+                        'scale' => 0,
+                        'required' => true,
+                    ],
                     );
 
                     /** Date */
@@ -129,6 +133,7 @@ final class AddOrderServiceToOrderForm extends AbstractType
                     if(false === empty($data['date']))
                     {
                         $periods = $this->allServicePeriodByDateRepository
+                            ->byProfile($UserProfileUid)
                             ->byDate(new DateTimeImmutable($data['date']))
                             ->findAll(new ServiceUid($data['serv']));
 

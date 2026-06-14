@@ -39,15 +39,22 @@ final class AddOrderServiceToOrderDTO
     #[Assert\NotBlank]
     #[Assert\Uuid]
     public ?ServiceUid $serv = null;
+
     #[Assert\Valid]
     public OrderServicePriceDTO $priceDTO;
+
     public ?string $name = null;
+
     public ?string $time = null;
+
     public array|false $allServices = false;
+
     #[Assert\NotBlank]
     private ?Money $price = null;
+
     #[Assert\NotBlank]
     private DateTimeImmutable|string|null $date = null;
+
     #[Assert\NotBlank]
     private ServicePeriodUid|string|null $period = null;
 
